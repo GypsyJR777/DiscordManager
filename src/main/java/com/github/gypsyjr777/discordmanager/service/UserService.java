@@ -1,8 +1,7 @@
 package com.github.gypsyjr777.discordmanager.service;
 
-import com.github.gypsyjr777.discordmanager.entity.DiscordGuildUser;
-import com.github.gypsyjr777.discordmanager.repository.DiscordGuildUserRepository;
-import net.dv8tion.jda.api.entities.Member;
+import com.github.gypsyjr777.discordmanager.entity.DiscordUser;
+import com.github.gypsyjr777.discordmanager.repository.DiscordUserRepository;
 import net.dv8tion.jda.api.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,20 +11,20 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class GuildUserService {
-    private final DiscordGuildUserRepository guildUserRepository;
+public class UserService {
+    @Autowired
+    private DiscordUserRepository guildUserRepository;
 
     @Autowired
-    public GuildUserService(DiscordGuildUserRepository guildUserRepository) {
-        this.guildUserRepository = guildUserRepository;
-    }
+    private GuildMemberService guildMemberService;
+
 
     public void updateDateUser(User user, boolean isVip) {
-        Optional<DiscordGuildUser> findGuildUser = findByIdGuildUser(user.getId());
-        DiscordGuildUser guildUser;
+        Optional<DiscordUser> findGuildUser = findByIdGuildUser(user.getId());
+        DiscordUser guildUser;
 
         if (findGuildUser.isEmpty()) {
-            guildUser = new DiscordGuildUser();
+            guildUser = new DiscordUser();
             guildUser.setId(user.getId());
             guildUser.setVip(isVip);
             guildUser.setLastOut(LocalDateTime.now());
@@ -38,15 +37,15 @@ public class GuildUserService {
         saveGuildUser(guildUser);
     }
 
-    public Optional<DiscordGuildUser> findByIdGuildUser(String id) {
+    public Optional<DiscordUser> findByIdGuildUser(String id) {
         return guildUserRepository.findById(id);
     }
 
-    public void saveGuildUser(DiscordGuildUser guildUser) {
+    public void saveGuildUser(DiscordUser guildUser) {
         guildUserRepository.save(guildUser);
     }
 
-    public List<DiscordGuildUser> findAllGuildUsers() {
+    public List<DiscordUser> findAllGuildUsers() {
         return guildUserRepository.findAll();
     }
 

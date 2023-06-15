@@ -6,17 +6,19 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
-@Table(name = "discordGuildUser")
+@Table(name = "discord_user")
 @Getter
 @Setter
 @NoArgsConstructor
-public class DiscordGuildUser {
+public class DiscordUser {
     @Id
     private String id;
 
-    private LocalDateTime lastOut;
-    private boolean isVip;
     private String username;
+
+    @OneToMany(mappedBy = "member")
+    Set<GuildMember> guildMembers;
 }

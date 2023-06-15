@@ -1,6 +1,7 @@
 package com.github.gypsyjr777.discordmanager.service;
 
-import com.github.gypsyjr777.discordmanager.entity.DiscordGuildUser;
+import com.github.gypsyjr777.discordmanager.entity.DiscordUser;
+import com.github.gypsyjr777.discordmanager.repository.DiscordGuildRepository;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
@@ -19,9 +20,12 @@ public class GuildService {
     private JDA jda;
 
     @Autowired
-    private GuildUserService guildUserService;
+    private GuildMemberService memberService;
 
-    public void findAndKickAfk(List<DiscordGuildUser> guildUsers) {
+    @Autowired
+    private DiscordGuildRepository guildRepository;
+
+    public void findAndKickAfk(List<DiscordUser> guildUsers) {
         guildUsers.forEach(user -> {
             LocalDateTime userLastVisit = user.getLastOut();
 
@@ -35,6 +39,6 @@ public class GuildService {
         assert guild != null;
         log.info("Kick {}", id);
         guild.kick(Objects.requireNonNull(jda.getUserById(id))).queue();
-        guildUserService.deleteGuildUser(id);
+        memberService.deleteGuildUser(id);
     }
 }

@@ -1,6 +1,6 @@
 package com.github.gypsyjr777.discordmanager.event;
 
-import com.github.gypsyjr777.discordmanager.service.GuildUserService;
+import com.github.gypsyjr777.discordmanager.service.UserService;
 import com.github.gypsyjr777.discordmanager.utils.CheckVip;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
@@ -18,11 +18,11 @@ public class ImplGuildVoiceUpdateEvent implements EventListener {
     @Autowired
     private JDA jda;
 
-    private final GuildUserService guildUserService;
+    private final UserService userService;
 
     @Autowired
-    public ImplGuildVoiceUpdateEvent(GuildUserService guildUserService) {
-        this.guildUserService = guildUserService;
+    public ImplGuildVoiceUpdateEvent(UserService userService) {
+        this.userService = userService;
     }
 
     @Override
@@ -31,18 +31,18 @@ public class ImplGuildVoiceUpdateEvent implements EventListener {
         if (event instanceof GuildVoiceUpdateEvent) {
             Guild guild = ((GuildVoiceUpdateEvent) event).getGuild();
             if (guild.getId().equals("708671790477475901")) {
-                if (guildUserService.findAllGuildUsers().isEmpty()) {
+                if (userService.findAllGuildUsers().isEmpty()) {
                     guild.getMembers().forEach(member -> {
-                        guildUserService.updateDateUser(member.getUser(), CheckVip.checkVipMember(member));
+                        userService.updateDateUser(member.getUser(), CheckVip.checkVipMember(member));
                     });
                 }
             }
 
-            guildUserService.updateDateUser(((GuildVoiceUpdateEvent) event).getMember().getUser(),
+            userService.updateDateUser(((GuildVoiceUpdateEvent) event).getMember().getUser(),
                     CheckVip.checkVipMember(((GuildVoiceUpdateEvent) event).getMember())
             );
         } else if (event instanceof GuildMemberJoinEvent) {
-            guildUserService.updateDateUser(((GuildMemberJoinEvent) event).getMember().getUser(),
+            userService.updateDateUser(((GuildMemberJoinEvent) event).getMember().getUser(),
                     CheckVip.checkVipMember(((GuildMemberJoinEvent) event).getMember())
             );
         }
