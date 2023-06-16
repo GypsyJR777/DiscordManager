@@ -1,6 +1,8 @@
 package com.github.gypsyjr777.discordmanager.service;
 
+import com.github.gypsyjr777.discordmanager.entity.DiscordGuild;
 import com.github.gypsyjr777.discordmanager.entity.DiscordUser;
+import com.github.gypsyjr777.discordmanager.entity.GuildMember;
 import com.github.gypsyjr777.discordmanager.repository.DiscordUserRepository;
 import net.dv8tion.jda.api.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,22 +21,29 @@ public class UserService {
     private GuildMemberService guildMemberService;
 
 
-    public void updateDateUser(User user, boolean isVip) {
+    public void updateDateUser(User user, boolean isVip, DiscordGuild guild) {
         Optional<DiscordUser> findGuildUser = findByIdGuildUser(user.getId());
         DiscordUser guildUser;
+        GuildMember guildMember;
 
         if (findGuildUser.isEmpty()) {
             guildUser = new DiscordUser();
             guildUser.setId(user.getId());
-            guildUser.setVip(isVip);
-            guildUser.setLastOut(LocalDateTime.now());
             guildUser.setUsername(user.getName());
+
+            guildMember = new GuildMember();
+            guildMember.setGuild(guild);
+            guildMember.setMember(guildUser);
+            guildMember.setVip(isVip);
+            guildMember.setLastOut(LocalDateTime.now());
         } else {
             guildUser = findGuildUser.get();
-            guildUser.setLastOut(LocalDateTime.now());
+            guildMember = guildMemberService.findGuildMemberByMemberAndGuild(guildUser, guild).orElseThrow();
+            guildMember.setLastOut(LocalDateTime.now());
         }
 
         saveGuildUser(guildUser);
+        guildMemberService.saveGuildMember(guildMember);
     }
 
     public Optional<DiscordUser> findByIdGuildUser(String id) {
@@ -45,7 +54,7 @@ public class UserService {
         guildUserRepository.save(guildUser);
     }
 
-    public List<DiscordUser> findAllGuildUsers() {
+    public List<DiscordUser> findAllDiscordUsers() {
         return guildUserRepository.findAll();
     }
 

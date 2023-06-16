@@ -20,7 +20,11 @@ public class AfkTasklet implements Tasklet {
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         log.info("ALL IS GOOD!!!");
-        guildService.findAndKickAfk(userService.findAllGuildUsers());
+
+        guildService.findAllGuildsWithVips().forEach(guild -> {
+            guildService.findAndKickAfk(guild);
+        });
+
         return RepeatStatus.FINISHED;
     }
 }

@@ -1,9 +1,13 @@
 package com.github.gypsyjr777.discordmanager.event;
 
+import com.github.gypsyjr777.discordmanager.entity.DiscordGuild;
+import com.github.gypsyjr777.discordmanager.service.GuildMemberService;
+import com.github.gypsyjr777.discordmanager.service.GuildService;
 import com.github.gypsyjr777.discordmanager.service.UserService;
 import com.github.gypsyjr777.discordmanager.utils.CheckVip;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
@@ -19,10 +23,14 @@ public class ImplGuildVoiceUpdateEvent implements EventListener {
     private JDA jda;
 
     private final UserService userService;
+    private final GuildService guildService;
+    private final GuildMemberService guildMemberService;
 
     @Autowired
-    public ImplGuildVoiceUpdateEvent(UserService userService) {
+    public ImplGuildVoiceUpdateEvent(UserService userService, GuildService guildService, GuildMemberService guildMemberService) {
         this.userService = userService;
+        this.guildService = guildService;
+        this.guildMemberService = guildMemberService;
     }
 
     @Override
@@ -30,20 +38,25 @@ public class ImplGuildVoiceUpdateEvent implements EventListener {
     public void onEvent(@NotNull GenericEvent event) {
         if (event instanceof GuildVoiceUpdateEvent) {
             Guild guild = ((GuildVoiceUpdateEvent) event).getGuild();
-            if (guild.getId().equals("708671790477475901")) {
-                if (userService.findAllGuildUsers().isEmpty()) {
-                    guild.getMembers().forEach(member -> {
-                        userService.updateDateUser(member.getUser(), CheckVip.checkVipMember(member));
-                    });
-                }
+            DiscordGuild discordGuild = guildService.findGuildById(guild.getId()).get();
+            if (guildMemberService.getAllGuildMembers(discordGuild).isEmpty()) {
+                guild.getMembers().forEach(it -> {
+                    userService.updateDateUser(it.getUser(), CheckVip.checkVipMember(it, discordGuild), discordGuild);
+                });
             }
 
-            userService.updateDateUser(((GuildVoiceUpdateEvent) event).getMember().getUser(),
-                    CheckVip.checkVipMember(((GuildVoiceUpdateEvent) event).getMember())
+            Member member = ((GuildVoiceUpdateEvent) event).getMember();
+            userService.updateDateUser(member.getUser(),
+                    CheckVip.checkVipMember(((GuildVoiceUpdateEvent) event).getMember(), discordGuild),
+                    discordGuild
             );
         } else if (event instanceof GuildMemberJoinEvent) {
-            userService.updateDateUser(((GuildMemberJoinEvent) event).getMember().getUser(),
-                    CheckVip.checkVipMember(((GuildMemberJoinEvent) event).getMember())
+            Guild guild = ((GuildMemberJoinEvent) event).getGuild();
+            DiscordGuild discordGuild = guildService.findGuildById(guild.getId()).orElseThrow();
+            Member member = ((GuildMemberJoinEvent) event).getMember();
+            userService.updateDateUser(member.getUser(),
+                    CheckVip.checkVipMember(member, discordGuild),
+                    discordGuild
             );
         }
     }
