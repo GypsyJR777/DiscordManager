@@ -8,22 +8,30 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "discord_user")
+@Table(name = "guild_member")
 @Getter
 @Setter
 @NoArgsConstructor
 public class GuildMember {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
     @JoinColumn(name = "member_id")
-    DiscordUser member;
+    private DiscordUser member;
 
     @ManyToOne
     @JoinColumn(name = "guild_id")
-    DiscordGuild guild;
+    private DiscordGuild guild;
 
     private LocalDateTime lastOut;
+
+    @Column(nullable = true)
     private boolean isVip;
+
+    public GuildMember(DiscordUser member, DiscordGuild guild) {
+        this.member = member;
+        this.guild = guild;
+    }
 }

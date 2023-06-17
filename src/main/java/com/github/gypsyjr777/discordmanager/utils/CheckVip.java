@@ -15,7 +15,11 @@ public class CheckVip {
     }
 
     public static boolean checkVipMember(Member member, DiscordGuild guild) {
-        List<String> vipIds = guild.getVipIds();
-        return member.getRoles().stream().anyMatch(it -> vipIds.contains(it.getId()));
+        if (guild.isHaveVips()) {
+            List<String> vipIds = guild.getVipIds();
+            return member.getRoles().stream().anyMatch(it -> vipIds.contains(it.getId()));
+        }
+
+        return true;
     }
 }

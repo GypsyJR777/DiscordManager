@@ -15,6 +15,7 @@ import net.dv8tion.jda.api.hooks.EventListener;
 import net.dv8tion.jda.api.hooks.SubscribeEvent;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,21 +23,33 @@ public class ImplGuildVoiceUpdateEvent implements EventListener {
     @Autowired
     private JDA jda;
 
+    private final ApplicationContext context;
+
     private final UserService userService;
     private final GuildService guildService;
     private final GuildMemberService guildMemberService;
 
     @Autowired
-    public ImplGuildVoiceUpdateEvent(UserService userService, GuildService guildService, GuildMemberService guildMemberService) {
+    public ImplGuildVoiceUpdateEvent(UserService userService, GuildService guildService, GuildMemberService guildMemberService, ApplicationContext context) {
         this.userService = userService;
         this.guildService = guildService;
         this.guildMemberService = guildMemberService;
+        this.context = context;
     }
 
     @Override
     @SubscribeEvent
     public void onEvent(@NotNull GenericEvent event) {
         if (event instanceof GuildVoiceUpdateEvent) {
+            if (jda == null) {
+                jda = context.getBean(JDA.class);
+            }
+
+            jda.getGuilds().forEach(guild -> {
+                DiscordGuild discordGuild = new DiscordGuild(guild);
+                guildService.saveGuild(discordGuild);
+            });
+
             Guild guild = ((GuildVoiceUpdateEvent) event).getGuild();
             DiscordGuild discordGuild = guildService.findGuildById(guild.getId()).get();
             if (guildMemberService.getAllGuildMembers(discordGuild).isEmpty()) {

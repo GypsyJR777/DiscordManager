@@ -28,11 +28,12 @@ public class DiscordBotConfig {
 
     @Bean
     public JDA jda() throws InterruptedException {
+
         return JDABuilder.createDefault(token)
                 .enableIntents(GatewayIntent.MESSAGE_CONTENT) // enables explicit access to message.getContentDisplay()
                 .setEventManager(new AnnotatedEventManager())
-                .addEventListeners(new ReadyEventListener())
-                .addEventListeners(new ImplGuildVoiceUpdateEvent(context.getBean(UserService.class), context.getBean(GuildService.class), context.getBean(GuildMemberService.class)))
+                .addEventListeners(new ReadyEventListener(context, context.getBean(GuildService.class)))
+                .addEventListeners(new ImplGuildVoiceUpdateEvent(context.getBean(UserService.class), context.getBean(GuildService.class), context.getBean(GuildMemberService.class), context))
                 .enableIntents(GatewayIntent.GUILD_MEMBERS)
                 .enableIntents(GatewayIntent.GUILD_PRESENCES)
                 .setMemberCachePolicy(MemberCachePolicy.ALL)

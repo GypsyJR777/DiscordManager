@@ -36,9 +36,10 @@ public class UserService {
             guildMember.setMember(guildUser);
             guildMember.setVip(isVip);
             guildMember.setLastOut(LocalDateTime.now());
+            guildUser.setGuildMember(guildMember);
         } else {
             guildUser = findGuildUser.get();
-            guildMember = guildMemberService.findGuildMemberByMemberAndGuild(guildUser, guild).orElseThrow();
+            guildMember = guildMemberService.findGuildMemberByMemberAndGuild(guildUser, guild).orElse(new GuildMember(guildUser, guild));
             guildMember.setLastOut(LocalDateTime.now());
         }
 

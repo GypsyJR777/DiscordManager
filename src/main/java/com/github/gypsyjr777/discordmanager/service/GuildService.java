@@ -57,4 +57,8 @@ public class GuildService {
     public List<DiscordGuild> findAllGuildsWithVips() {
         return guildRepository.findAllByHaveVips(true);
     }
+
+    public void saveGuild(DiscordGuild guild) {
+        guildRepository.save(guild);
+    }
 }

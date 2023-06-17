@@ -22,7 +22,8 @@ public class AfkTasklet implements Tasklet {
         log.info("ALL IS GOOD!!!");
 
         guildService.findAllGuildsWithVips().forEach(guild -> {
-            guildService.findAndKickAfk(guild);
+            if (guild.isHaveVips())
+                guildService.findAndKickAfk(guild);
         });
 
         return RepeatStatus.FINISHED;
