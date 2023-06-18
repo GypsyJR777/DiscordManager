@@ -4,6 +4,7 @@ import com.github.gypsyjr777.discordmanager.entity.DiscordGuild;
 import com.github.gypsyjr777.discordmanager.entity.DiscordUser;
 import com.github.gypsyjr777.discordmanager.entity.GuildMember;
 import com.github.gypsyjr777.discordmanager.repository.DiscordUserRepository;
+import com.github.gypsyjr777.discordmanager.utils.CheckVip;
 import net.dv8tion.jda.api.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,16 +22,29 @@ public class UserService {
     private GuildMemberService guildMemberService;
 
 
-    public void updateDateUser(User user, boolean isVip, DiscordGuild guild) {
-        DiscordUser guildUser = findByIdGuildUser(user.getId()).orElse(new DiscordUser(user));
+    public void updateDateUser(User user, DiscordGuild guild) {
+        DiscordUser guildUser = findByIdDiscordUser(user.getId()).orElseThrow();
         GuildMember guildMember = guildMemberService.findGuildMemberByMemberAndGuild(guildUser, guild).orElse(new GuildMember(guildUser, guild));
-        guildMember.setVip(isVip);
         guildMember.setLastOut(LocalDateTime.now());
         saveGuildUser(guildUser);
         guildMemberService.saveGuildMember(guildMember);
     }
 
-    public Optional<DiscordUser> findByIdGuildUser(String id) {
+    public void createNewUser(User user, boolean isVip, DiscordGuild guild) {
+        DiscordUser discordUser = findByIdDiscordUser(user.getId()).orElse(new DiscordUser(user));
+        GuildMember guildMember = guildMemberService.findGuildMemberByMemberAndGuild(discordUser, guild).orElse(new GuildMember(discordUser, guild));
+
+        if (guildMember.getLastOut() == null) {
+            guildMember.setLastOut(LocalDateTime.now());
+        }
+
+        guildMember.setVip(isVip);
+
+        saveGuildUser(discordUser);
+        guildMemberService.saveGuildMember(guildMember);
+    }
+
+    public Optional<DiscordUser> findByIdDiscordUser(String id) {
         return guildUserRepository.findById(id);
     }
 

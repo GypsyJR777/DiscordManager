@@ -33,7 +33,7 @@ public class DiscordBotConfig {
         return JDABuilder.createDefault(token)
                 .enableIntents(GatewayIntent.MESSAGE_CONTENT) // enables explicit access to message.getContentDisplay()
                 .setEventManager(new AnnotatedEventManager())
-                .addEventListeners(new ReadyEventListener(context, context.getBean(GuildService.class)))
+                .addEventListeners(new ReadyEventListener(context, context.getBean(GuildService.class), context.getBean(GuildMemberService.class), context.getBean(UserService.class)))
                 .addEventListeners(new GuildVoiceEvents(context.getBean(UserService.class), context.getBean(GuildService.class), context.getBean(GuildMemberService.class)))
                 .addEventListeners(new GuildMembersEvents(context.getBean(UserService.class), context.getBean(GuildService.class)))
                 .enableIntents(GatewayIntent.GUILD_MEMBERS)

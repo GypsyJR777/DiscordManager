@@ -1,46 +1,73 @@
 package com.github.gypsyjr777.discordmanager.event;
 
 import com.github.gypsyjr777.discordmanager.entity.DiscordGuild;
+import com.github.gypsyjr777.discordmanager.entity.DiscordUser;
+import com.github.gypsyjr777.discordmanager.entity.GuildMember;
+import com.github.gypsyjr777.discordmanager.service.GuildMemberService;
 import com.github.gypsyjr777.discordmanager.service.GuildService;
+import com.github.gypsyjr777.discordmanager.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
-import net.dv8tion.jda.api.hooks.EventListener;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.hooks.SubscribeEvent;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 @Slf4j
-public class ReadyEventListener implements EventListener {
-
-    @Autowired
-    private JDA jda;
-
+public class ReadyEventListener extends ListenerAdapter {
     private final ApplicationContext context;
 
     private final GuildService guildService;
+    private final GuildMemberService guildMemberService;
+    private final UserService userService;
 
     @Autowired
-    @Lazy
-    public ReadyEventListener(ApplicationContext context, GuildService guildService) {
+    public ReadyEventListener(ApplicationContext context, GuildService guildService, GuildMemberService guildMemberService, UserService userService) {
         this.context = context;
         this.guildService = guildService;
+        this.guildMemberService = guildMemberService;
+        this.userService = userService;
     }
 
     @Override
     @SubscribeEvent
-    public void onEvent(@NotNull GenericEvent event) {
-        if (event instanceof ReadyEvent) {
-            log.info("Bot is ready!");
+    public void onReady(ReadyEvent event) {
+        log.info("Bot is ready!");
+    }
 
-        }
+    @EventListener(ApplicationReadyEvent.class)
+    public void runAfterStartup() {
+        JDA jda = context.getBean(JDA.class);
+
+        jda.getGuilds().forEach(guild -> {
+            DiscordGuild discordGuild = guildService.findGuildById(guild.getId()).orElse(new DiscordGuild(guild));
+            guildService.saveGuild(discordGuild);
+
+            List<Member> members = guild.getMembers();
+            members.forEach(member -> {
+                DiscordUser user = userService.findByIdDiscordUser(member.getUser().getId()).orElse(new DiscordUser(member.getUser()));
+                GuildMember guildMember = guildMemberService.findGuildMemberByMemberAndGuild(user, discordGuild).orElse(new GuildMember(user, discordGuild));
+
+                if (guildMember.getLastOut() == null) {
+                    guildMember.setLastOut(LocalDateTime.now());
+                }
+
+                userService.saveGuildUser(user);
+                guildMemberService.saveGuildMember(guildMember);
+            });
+        });
     }
 }
+
+
+

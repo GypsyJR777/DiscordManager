@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.hooks.SubscribeEvent;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,11 +24,12 @@ public class GuildMembersEvents extends ListenerAdapter {
     }
 
     @Override
+    @SubscribeEvent
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {
         Guild guild = event.getGuild();
         DiscordGuild discordGuild = guildService.findGuildById(guild.getId()).orElseThrow();
         Member member = event.getMember();
-        userService.updateDateUser(member.getUser(),
+        userService.createNewUser(member.getUser(),
                 CheckVip.checkVipMember(member, discordGuild),
                 discordGuild
         );

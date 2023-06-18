@@ -21,14 +21,15 @@ public class DiscordGuild {
     @Id
     private String id;
 
+    @Column(nullable = true)
     @OneToMany(mappedBy = "guild")
-    private Set<GuildMember> guildMembers = new HashSet<>();
+    private Set<GuildMember> guildMembers;
 
     private boolean haveVips;
 
     @Column(nullable = true)
     @OneToMany
-    private List<DiscordRole> vipRoles = new ArrayList<>();
+    private List<DiscordRole> vipRoles;
 
     public List<String> getVipIds() {
         List<String> ids = new ArrayList<>();
@@ -42,12 +43,6 @@ public class DiscordGuild {
 
     public DiscordGuild(Guild guild) {
         id = guild.getId();
-//        guild.getMembers().forEach(member -> {
-//            DiscordUser user = new DiscordUser(member);
-//            GuildMember guildMember = new GuildMember();
-//            guildMember.setGuild(this);
-//            guildMember.setMember(user);
-//            guildMembers.add(guildMember);
-//        });
+        haveVips = false;
     }
 }
