@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface DiscordGuildRepository extends JpaRepository<DiscordGuild, String> {
-    List<DiscordGuild> findAllByHaveVips(boolean haveVips);
+    List<DiscordGuild> findAllByHaveLeaveTimer(boolean haveLeaveTimers);
 }

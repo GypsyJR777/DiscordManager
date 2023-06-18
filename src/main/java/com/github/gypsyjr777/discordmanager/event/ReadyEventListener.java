@@ -1,5 +1,6 @@
 package com.github.gypsyjr777.discordmanager.event;
 
+import com.github.gypsyjr777.discordmanager.config.command.SlashCommand;
 import com.github.gypsyjr777.discordmanager.entity.DiscordGuild;
 import com.github.gypsyjr777.discordmanager.entity.DiscordUser;
 import com.github.gypsyjr777.discordmanager.entity.GuildMember;
@@ -8,7 +9,6 @@ import com.github.gypsyjr777.discordmanager.service.GuildService;
 import com.github.gypsyjr777.discordmanager.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -45,6 +45,7 @@ public class ReadyEventListener extends ListenerAdapter {
         log.info("Bot is ready!");
     }
 
+    // При добавлении этих строк в метод onReady, не сохраняет в бд данные + зависает
     @EventListener(ApplicationReadyEvent.class)
     public void runAfterStartup() {
         JDA jda = context.getBean(JDA.class);
@@ -65,7 +66,12 @@ public class ReadyEventListener extends ListenerAdapter {
                 userService.saveGuildUser(user);
                 guildMemberService.saveGuildMember(guildMember);
             });
+
         });
+
+        jda.updateCommands().addCommands(
+                SlashCommand.getSlashCommand()
+        ).queue();
     }
 }
 

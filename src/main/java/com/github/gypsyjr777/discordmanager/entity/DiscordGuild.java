@@ -25,16 +25,16 @@ public class DiscordGuild {
     @OneToMany(mappedBy = "guild")
     private Set<GuildMember> guildMembers;
 
-    private boolean haveVips;
+    private boolean haveLeaveTimer;
 
     @Column(nullable = true)
-    @OneToMany
-    private List<DiscordRole> vipRoles;
+    @OneToMany(fetch = FetchType.EAGER)
+    private List<DiscordRole> leaveTimerRoles;
 
-    public List<String> getVipIds() {
+    public List<String> getLeaveTimerIds() {
         List<String> ids = new ArrayList<>();
 
-        vipRoles.forEach(it -> {
+        leaveTimerRoles.forEach(it -> {
             ids.add(it.getId());
         });
 
@@ -43,6 +43,15 @@ public class DiscordGuild {
 
     public DiscordGuild(Guild guild) {
         id = guild.getId();
-        haveVips = false;
+        haveLeaveTimer = false;
+        guildMembers = new HashSet<>();
+        leaveTimerRoles = new ArrayList<>();
+    }
+
+    public void addRole(DiscordRole role) {
+        if (leaveTimerRoles == null || leaveTimerRoles.isEmpty())
+            leaveTimerRoles = new ArrayList<>();
+
+        leaveTimerRoles.add(role);
     }
 }

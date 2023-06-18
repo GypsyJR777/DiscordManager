@@ -6,6 +6,7 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import net.dv8tion.jda.api.entities.Role;
 
 @Entity
 @Table(name = "discord_role")
@@ -16,5 +17,9 @@ public class DiscordRole {
     @Id
     private String id;
 
-    private String name;
+//    private String name;
+
+    public DiscordRole(Role role) {
+        id = role.getId();
+    }
 }

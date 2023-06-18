@@ -2,12 +2,15 @@ package com.github.gypsyjr777.discordmanager.config;
 
 import com.github.gypsyjr777.discordmanager.event.GuildMembersEvents;
 import com.github.gypsyjr777.discordmanager.event.GuildVoiceEvents;
+import com.github.gypsyjr777.discordmanager.event.SlashCommandInteraction;
 import com.github.gypsyjr777.discordmanager.event.ReadyEventListener;
 import com.github.gypsyjr777.discordmanager.service.GuildMemberService;
 import com.github.gypsyjr777.discordmanager.service.GuildService;
+import com.github.gypsyjr777.discordmanager.service.RoleService;
 import com.github.gypsyjr777.discordmanager.service.UserService;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.hooks.AnnotatedEventManager;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
@@ -32,10 +35,12 @@ public class DiscordBotConfig {
 
         return JDABuilder.createDefault(token)
                 .enableIntents(GatewayIntent.MESSAGE_CONTENT) // enables explicit access to message.getContentDisplay()
+                .setActivity(Activity.of(Activity.ActivityType.PLAYING, "Bot`s simple life"))
                 .setEventManager(new AnnotatedEventManager())
                 .addEventListeners(new ReadyEventListener(context, context.getBean(GuildService.class), context.getBean(GuildMemberService.class), context.getBean(UserService.class)))
                 .addEventListeners(new GuildVoiceEvents(context.getBean(UserService.class), context.getBean(GuildService.class), context.getBean(GuildMemberService.class)))
                 .addEventListeners(new GuildMembersEvents(context.getBean(UserService.class), context.getBean(GuildService.class)))
+                .addEventListeners(new SlashCommandInteraction(context.getBean(GuildService.class), context.getBean(GuildMemberService.class), context.getBean(UserService.class), context.getBean(RoleService.class)))
                 .enableIntents(GatewayIntent.GUILD_MEMBERS)
                 .enableIntents(GatewayIntent.GUILD_PRESENCES)
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
