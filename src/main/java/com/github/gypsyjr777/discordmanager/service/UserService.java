@@ -22,27 +22,10 @@ public class UserService {
 
 
     public void updateDateUser(User user, boolean isVip, DiscordGuild guild) {
-        Optional<DiscordUser> findGuildUser = findByIdGuildUser(user.getId());
-        DiscordUser guildUser;
-        GuildMember guildMember;
-
-        if (findGuildUser.isEmpty()) {
-            guildUser = new DiscordUser();
-            guildUser.setId(user.getId());
-            guildUser.setUsername(user.getName());
-
-            guildMember = new GuildMember();
-            guildMember.setGuild(guild);
-            guildMember.setMember(guildUser);
-            guildMember.setVip(isVip);
-            guildMember.setLastOut(LocalDateTime.now());
-            guildUser.setGuildMember(guildMember);
-        } else {
-            guildUser = findGuildUser.get();
-            guildMember = guildMemberService.findGuildMemberByMemberAndGuild(guildUser, guild).orElse(new GuildMember(guildUser, guild));
-            guildMember.setLastOut(LocalDateTime.now());
-        }
-
+        DiscordUser guildUser = findByIdGuildUser(user.getId()).orElse(new DiscordUser(user));
+        GuildMember guildMember = guildMemberService.findGuildMemberByMemberAndGuild(guildUser, guild).orElse(new GuildMember(guildUser, guild));
+        guildMember.setVip(isVip);
+        guildMember.setLastOut(LocalDateTime.now());
         saveGuildUser(guildUser);
         guildMemberService.saveGuildMember(guildMember);
     }

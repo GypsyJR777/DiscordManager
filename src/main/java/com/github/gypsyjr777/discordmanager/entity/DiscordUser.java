@@ -4,9 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,12 +23,12 @@ public class DiscordUser {
     @OneToMany(mappedBy = "member")
     Set<GuildMember> guildMembers = new HashSet<>();
 
-    public DiscordUser(Member member) {
-        id = member.getId();
-        username = member.getUser().getName();
+    public DiscordUser(User user) {
+        id = user.getId();
+        username = user.getName();
     }
 
-    public void setGuildMember(GuildMember guildMember) {
+    public void addGuildMember(GuildMember guildMember) {
         guildMembers.add(guildMember);
     }
 }

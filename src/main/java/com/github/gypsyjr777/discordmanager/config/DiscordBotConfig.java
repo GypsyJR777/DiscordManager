@@ -1,6 +1,7 @@
 package com.github.gypsyjr777.discordmanager.config;
 
-import com.github.gypsyjr777.discordmanager.event.ImplGuildVoiceUpdateEvent;
+import com.github.gypsyjr777.discordmanager.event.GuildMembersEvents;
+import com.github.gypsyjr777.discordmanager.event.GuildVoiceEvents;
 import com.github.gypsyjr777.discordmanager.event.ReadyEventListener;
 import com.github.gypsyjr777.discordmanager.service.GuildMemberService;
 import com.github.gypsyjr777.discordmanager.service.GuildService;
@@ -33,7 +34,8 @@ public class DiscordBotConfig {
                 .enableIntents(GatewayIntent.MESSAGE_CONTENT) // enables explicit access to message.getContentDisplay()
                 .setEventManager(new AnnotatedEventManager())
                 .addEventListeners(new ReadyEventListener(context, context.getBean(GuildService.class)))
-                .addEventListeners(new ImplGuildVoiceUpdateEvent(context.getBean(UserService.class), context.getBean(GuildService.class), context.getBean(GuildMemberService.class), context))
+                .addEventListeners(new GuildVoiceEvents(context.getBean(UserService.class), context.getBean(GuildService.class), context.getBean(GuildMemberService.class)))
+                .addEventListeners(new GuildMembersEvents(context.getBean(UserService.class), context.getBean(GuildService.class)))
                 .enableIntents(GatewayIntent.GUILD_MEMBERS)
                 .enableIntents(GatewayIntent.GUILD_PRESENCES)
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
