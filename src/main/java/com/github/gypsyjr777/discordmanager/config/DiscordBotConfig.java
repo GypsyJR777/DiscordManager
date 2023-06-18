@@ -1,9 +1,11 @@
 package com.github.gypsyjr777.discordmanager.config;
 
-import com.github.gypsyjr777.discordmanager.event.ImplGuildVoiceUpdateEvent;
+import com.github.gypsyjr777.discordmanager.event.GuildMembersEvents;
+import com.github.gypsyjr777.discordmanager.event.GuildVoiceEvents;
 import com.github.gypsyjr777.discordmanager.event.ReadyEventListener;
-import com.github.gypsyjr777.discordmanager.repository.DiscordGuildUserRepository;
-import com.github.gypsyjr777.discordmanager.service.GuildUserService;
+import com.github.gypsyjr777.discordmanager.service.GuildMemberService;
+import com.github.gypsyjr777.discordmanager.service.GuildService;
+import com.github.gypsyjr777.discordmanager.service.UserService;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.hooks.AnnotatedEventManager;
@@ -27,11 +29,13 @@ public class DiscordBotConfig {
 
     @Bean
     public JDA jda() throws InterruptedException {
+
         return JDABuilder.createDefault(token)
                 .enableIntents(GatewayIntent.MESSAGE_CONTENT) // enables explicit access to message.getContentDisplay()
                 .setEventManager(new AnnotatedEventManager())
-                .addEventListeners(new ReadyEventListener())
-                .addEventListeners(new ImplGuildVoiceUpdateEvent(context.getBean(GuildUserService.class)))
+                .addEventListeners(new ReadyEventListener(context, context.getBean(GuildService.class)))
+                .addEventListeners(new GuildVoiceEvents(context.getBean(UserService.class), context.getBean(GuildService.class), context.getBean(GuildMemberService.class)))
+                .addEventListeners(new GuildMembersEvents(context.getBean(UserService.class), context.getBean(GuildService.class)))
                 .enableIntents(GatewayIntent.GUILD_MEMBERS)
                 .enableIntents(GatewayIntent.GUILD_PRESENCES)
                 .setMemberCachePolicy(MemberCachePolicy.ALL)

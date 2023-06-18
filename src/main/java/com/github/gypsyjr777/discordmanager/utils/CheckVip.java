@@ -1,5 +1,6 @@
 package com.github.gypsyjr777.discordmanager.utils;
 
+import com.github.gypsyjr777.discordmanager.entity.DiscordGuild;
 import net.dv8tion.jda.api.entities.Member;
 
 import java.util.ArrayList;
@@ -13,7 +14,12 @@ public class CheckVip {
         vipId.add("1030617301382348922");
     }
 
-    public static boolean checkVipMember(Member member) {
-        return member.getRoles().stream().anyMatch(it -> vipId.contains(it.getId()));
+    public static boolean checkVipMember(Member member, DiscordGuild guild) {
+        if (guild.isHaveVips()) {
+            List<String> vipIds = guild.getVipIds();
+            return member.getRoles().stream().anyMatch(it -> vipIds.contains(it.getId()));
+        }
+
+        return true;
     }
 }
