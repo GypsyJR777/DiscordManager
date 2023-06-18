@@ -21,16 +21,29 @@ public class UserService {
     private GuildMemberService guildMemberService;
 
 
-    public void updateDateUser(User user, boolean isVip, DiscordGuild guild) {
-        DiscordUser guildUser = findByIdGuildUser(user.getId()).orElse(new DiscordUser(user));
+    public void updateDateUser(User user, DiscordGuild guild) {
+        DiscordUser guildUser = findByIdDiscordUser(user.getId()).orElseThrow();
         GuildMember guildMember = guildMemberService.findGuildMemberByMemberAndGuild(guildUser, guild).orElse(new GuildMember(guildUser, guild));
-        guildMember.setVip(isVip);
         guildMember.setLastOut(LocalDateTime.now());
         saveGuildUser(guildUser);
         guildMemberService.saveGuildMember(guildMember);
     }
 
-    public Optional<DiscordUser> findByIdGuildUser(String id) {
+    public void createNewUser(User user, boolean isLeaveTimer, DiscordGuild guild) {
+        DiscordUser discordUser = findByIdDiscordUser(user.getId()).orElse(new DiscordUser(user));
+        GuildMember guildMember = guildMemberService.findGuildMemberByMemberAndGuild(discordUser, guild).orElse(new GuildMember(discordUser, guild));
+
+        if (guildMember.getLastOut() == null) {
+            guildMember.setLastOut(LocalDateTime.now());
+        }
+
+        guildMember.setLeaveTimer(isLeaveTimer);
+
+        saveGuildUser(discordUser);
+        guildMemberService.saveGuildMember(guildMember);
+    }
+
+    public Optional<DiscordUser> findByIdDiscordUser(String id) {
         return guildUserRepository.findById(id);
     }
 

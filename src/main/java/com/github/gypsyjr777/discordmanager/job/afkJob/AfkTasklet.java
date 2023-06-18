@@ -21,8 +21,8 @@ public class AfkTasklet implements Tasklet {
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         log.info("ALL IS GOOD!!!");
 
-        guildService.findAllGuildsWithVips().forEach(guild -> {
-            if (guild.isHaveVips())
+        guildService.findAllGuildsWithLeaveTimers().forEach(guild -> {
+            if (guild.isHaveLeaveTimer())
                 guildService.findAndKickAfk(guild);
         });
 

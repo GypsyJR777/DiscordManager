@@ -34,7 +34,7 @@ public class GuildService {
         Set<GuildMember> guildMembers = guild.getGuildMembers();
         guildMembers.forEach(user -> {
             LocalDateTime userLastVisit = user.getLastOut();
-            if (ChronoUnit.DAYS.between(userLastVisit, LocalDateTime.now()) > 30 && !user.isVip()) {
+            if (ChronoUnit.DAYS.between(userLastVisit, LocalDateTime.now()) > 30 && !user.isLeaveTimer()) {
                 removeUser(user.getMember(), guild);
             }
         });
@@ -54,8 +54,8 @@ public class GuildService {
         return guildRepository.findById(id);
     }
 
-    public List<DiscordGuild> findAllGuildsWithVips() {
-        return guildRepository.findAllByHaveVips(true);
+    public List<DiscordGuild> findAllGuildsWithLeaveTimers() {
+        return guildRepository.findAllByHaveLeaveTimer(true);
     }
 
     public void saveGuild(DiscordGuild guild) {

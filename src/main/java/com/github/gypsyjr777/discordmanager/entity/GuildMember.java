@@ -28,7 +28,7 @@ public class GuildMember {
     private LocalDateTime lastOut;
 
     @Column(nullable = true)
-    private boolean isVip;
+    private boolean isLeaveTimer;
 
     public GuildMember(DiscordUser member, DiscordGuild guild) {
         this.member = member;
