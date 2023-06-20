@@ -10,17 +10,18 @@ import com.github.gypsyjr777.discordmanager.service.RoleService;
 import com.github.gypsyjr777.discordmanager.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.hooks.SubscribeEvent;
-import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
-import net.dv8tion.jda.api.utils.messages.MessageCreateData;
+import net.dv8tion.jda.internal.JDAImpl;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -45,6 +46,8 @@ public class SlashCommandInteraction extends ListenerAdapter {
                 leaveTimer(event);
             } else if (event.getName().equals(SlashCommand.ANNOUNCEMENT.getCommand())) {
                 announce(event);
+            } else if (event.getName().equals(SlashCommand.REACTION_ROLE_ADD.getCommand())) {
+                addReactionRole(event);
             }
         }
     }
@@ -58,11 +61,11 @@ public class SlashCommandInteraction extends ListenerAdapter {
                 textChannel = event.getOption("channel").getAsChannel().asTextChannel();
             }
 
-            event.reply("The announcement is published").queue();
             textChannel
                     .sendMessage("")
-                    .setEmbeds(createEmbedMessage(event.getOption("title").getAsString(), event.getOption("text").getAsString()).build())
+                    .setEmbeds(createEmbedMessage(event.getOption("title").getAsString().replace("\\n", "\n"), event.getOption("text").getAsString().replace("\\n", "\n")).build())
                     .queue();
+            event.reply("The announcement is published").queue();
         } else {
             event.reply("For this action, you need administrator rights").queue();
         }
@@ -73,7 +76,8 @@ public class SlashCommandInteraction extends ListenerAdapter {
             DiscordGuild guild = guildService.findGuildById(event.getGuild().getId()).orElseThrow();
             guild.setHaveLeaveTimer(true);
 
-            DiscordRole role = new DiscordRole(event.getOption("role").getAsRole());
+            DiscordRole role = new DiscordRole(event.getOption("role").getAsRole(), guild);
+            role.setVip(true);
             roleService.saveRole(role);
 
             guild.addRole(role);
@@ -92,6 +96,29 @@ public class SlashCommandInteraction extends ListenerAdapter {
             });
 
             event.reply("Role added").queue();
+        } else {
+            event.reply("For this action, you need administrator rights").queue();
+        }
+    }
+
+    private void addReactionRole(SlashCommandInteractionEvent event) {
+        if (event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+            DiscordGuild guild = guildService.findGuildById(event.getGuild().getId()).orElseThrow();
+            DiscordRole role = roleService.findRoleById(event.getOption("role").getAsRole().getId()).orElse(new DiscordRole(event.getOption("role").getAsRole(), guild));
+            String reaction = event.getOption("reaction").getAsString();
+            String messageId = event.getOption("message_id").getAsString();
+
+            for (TextChannel textChannel : event.getGuild().getTextChannels()) {
+                if (textChannel.getIterableHistory().stream().anyMatch(message -> message.getId().equals(messageId))) {
+                    textChannel.retrieveMessageById(messageId).queue(message -> message.addReaction(Emoji.fromFormatted(reaction)).queue());
+                    role.setReaction(reaction);
+                    role.setMessageId(messageId);
+                    roleService.saveRole(role);
+                    break;
+                }
+            }
+
+            event.reply("Reaction added").queue();
         } else {
             event.reply("For this action, you need administrator rights").queue();
         }
