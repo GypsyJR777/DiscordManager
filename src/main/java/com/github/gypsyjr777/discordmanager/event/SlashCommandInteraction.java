@@ -10,15 +10,12 @@ import com.github.gypsyjr777.discordmanager.service.RoleService;
 import com.github.gypsyjr777.discordmanager.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.hooks.SubscribeEvent;
-import net.dv8tion.jda.internal.JDAImpl;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -48,6 +45,8 @@ public class SlashCommandInteraction extends ListenerAdapter {
                 announce(event);
             } else if (event.getName().equals(SlashCommand.REACTION_ROLE_ADD.getCommand())) {
                 addReactionRole(event);
+            } else if (event.getName().equals(SlashCommand.REACTION_ROLE_TEXT.getCommand())) {
+                addTextReactionRole(event);
             }
         }
     }
@@ -112,13 +111,36 @@ public class SlashCommandInteraction extends ListenerAdapter {
                 if (textChannel.getIterableHistory().stream().anyMatch(message -> message.getId().equals(messageId))) {
                     textChannel.retrieveMessageById(messageId).queue(message -> message.addReaction(Emoji.fromFormatted(reaction)).queue());
                     role.setReaction(reaction);
-                    role.setMessageId(messageId);
                     roleService.saveRole(role);
-                    break;
+                    event.reply("Reaction added").queue();
+                    return;
                 }
             }
+            //TODO сюда отдельный эксепшн
+            throw new RuntimeException();
+        } else {
+            event.reply("For this action, you need administrator rights").queue();
+        }
+    }
 
-            event.reply("Reaction added").queue();
+    private void addTextReactionRole(SlashCommandInteractionEvent event) {
+        if (event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+            DiscordGuild guild = guildService.findGuildById(event.getGuild().getId()).orElseThrow();
+            String text = event.getOption("text").getAsString();
+            TextChannel textChannel = event.getChannel().asTextChannel();
+            String title = event.getOption("title") == null ? null : event.getOption("title").getAsString();
+
+            if (title == null) {
+                textChannel.sendMessage(text).queue();
+            } else {
+                String messageId = textChannel
+                        .sendMessage("")
+                        .setEmbeds(createEmbedMessage(title.replace("\\n", "\n"), text.replace("\\n", "\n")).build()).complete().getId();
+                guild.setMessageId(messageId);
+                guildService.saveGuild(guild);
+            }
+
+            event.reply("Reaction message added").queue();
         } else {
             event.reply("For this action, you need administrator rights").queue();
         }

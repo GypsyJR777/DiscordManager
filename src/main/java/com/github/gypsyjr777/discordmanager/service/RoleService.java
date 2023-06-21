@@ -25,4 +25,8 @@ public class RoleService {
     public Optional<DiscordRole> findRoleById(String roleId) {
         return roleRepository.findById(roleId);
     }
+
+    public Optional<DiscordRole> findRoleByReaction(String reaction) {
+        return roleRepository.findByReaction(reaction);
+    }
 }

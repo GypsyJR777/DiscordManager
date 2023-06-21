@@ -29,8 +29,14 @@ public enum SlashCommand {
             .addOption(OptionType.STRING, "message_id", "Message id", true)
             .addOption(OptionType.STRING, "reaction", "Emoji reaction", true)
             .addOption(OptionType.ROLE, "role", "Role", true),
-            "reactionrole_add"
-    );
+            "reactionrole_add"),
+    REACTION_ROLE_TEXT(Commands
+            .slash("reactionrole_text", "Create new reaction for role")
+            .setGuildOnly(true)
+            .addOption(OptionType.STRING, "text", "Announce text", true)
+            .addOption(OptionType.CHANNEL, "channel", "Channel for publishing", true)
+            .addOption(OptionType.STRING, "title", "Announce title", false),
+            "reactionrole_text");
 
     private final SlashCommandData slashCommandData;
     private final String command;

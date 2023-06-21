@@ -24,9 +24,6 @@ public class DiscordRole {
     @Column(nullable = true)
     private String reaction;
 
-    @Column(nullable = true)
-    private String messageId;
-
     private boolean vip = false;
 
     public DiscordRole(Role role, DiscordGuild guild) {

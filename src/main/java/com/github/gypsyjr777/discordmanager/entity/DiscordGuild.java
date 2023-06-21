@@ -31,6 +31,9 @@ public class DiscordGuild {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "guild")
     private List<DiscordRole> leaveTimerRoles;
 
+    @Column(nullable = true)
+    private String messageId;
+
     public List<String> getLeaveTimerIds() {
         List<String> ids = new ArrayList<>();
 
