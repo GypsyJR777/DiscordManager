@@ -13,14 +13,30 @@ import java.util.List;
 public enum SlashCommand {
     LEAVE_TIMER(Commands
             .slash("leavetimer", "Adding roles to protect against AFK")
+            .setGuildOnly(true)
             .addOption(OptionType.ROLE, "role", "Role for protecting", true),
             "leavetimer"),
     ANNOUNCEMENT(Commands
             .slash("announce", "Publish an announce")
+            .setGuildOnly(true)
             .addOption(OptionType.STRING, "title", "Announce title", true)
             .addOption(OptionType.STRING, "text", "Announce text", true)
             .addOption(OptionType.CHANNEL, "channel", "Channel for publishing", false),
-            "announce");
+            "announce"),
+    REACTION_ROLE_ADD(Commands
+            .slash("reactionrole_add", "Create new reaction for role")
+            .setGuildOnly(true)
+            .addOption(OptionType.STRING, "message_id", "Message id", true)
+            .addOption(OptionType.STRING, "reaction", "Emoji reaction", true)
+            .addOption(OptionType.ROLE, "role", "Role", true),
+            "reactionrole_add"),
+    REACTION_ROLE_TEXT(Commands
+            .slash("reactionrole_text", "Create new reaction for role")
+            .setGuildOnly(true)
+            .addOption(OptionType.STRING, "text", "Announce text", true)
+            .addOption(OptionType.CHANNEL, "channel", "Channel for publishing", true)
+            .addOption(OptionType.STRING, "title", "Announce title", false),
+            "reactionrole_text");
 
     private final SlashCommandData slashCommandData;
     private final String command;

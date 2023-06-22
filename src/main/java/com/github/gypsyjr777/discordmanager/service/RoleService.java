@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @Slf4j
 public class RoleService {
@@ -18,5 +20,13 @@ public class RoleService {
 
     public void saveRole(DiscordRole role) {
         roleRepository.save(role);
+    }
+
+    public Optional<DiscordRole> findRoleById(String roleId) {
+        return roleRepository.findById(roleId);
+    }
+
+    public Optional<DiscordRole> findRoleByReaction(String reaction) {
+        return roleRepository.findByReaction(reaction);
     }
 }

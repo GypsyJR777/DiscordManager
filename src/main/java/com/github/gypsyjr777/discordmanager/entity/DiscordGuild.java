@@ -28,8 +28,11 @@ public class DiscordGuild {
     private boolean haveLeaveTimer;
 
     @Column(nullable = true)
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "guild")
     private List<DiscordRole> leaveTimerRoles;
+
+    @Column(nullable = true)
+    private String messageId;
 
     public List<String> getLeaveTimerIds() {
         List<String> ids = new ArrayList<>();

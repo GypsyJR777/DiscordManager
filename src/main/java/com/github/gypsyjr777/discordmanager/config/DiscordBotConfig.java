@@ -1,9 +1,6 @@
 package com.github.gypsyjr777.discordmanager.config;
 
-import com.github.gypsyjr777.discordmanager.event.GuildMembersEvents;
-import com.github.gypsyjr777.discordmanager.event.GuildVoiceEvents;
-import com.github.gypsyjr777.discordmanager.event.SlashCommandInteraction;
-import com.github.gypsyjr777.discordmanager.event.ReadyEventListener;
+import com.github.gypsyjr777.discordmanager.event.*;
 import com.github.gypsyjr777.discordmanager.service.GuildMemberService;
 import com.github.gypsyjr777.discordmanager.service.GuildService;
 import com.github.gypsyjr777.discordmanager.service.RoleService;
@@ -41,8 +38,14 @@ public class DiscordBotConfig {
                 .addEventListeners(new GuildVoiceEvents(context.getBean(UserService.class), context.getBean(GuildService.class), context.getBean(GuildMemberService.class)))
                 .addEventListeners(new GuildMembersEvents(context.getBean(UserService.class), context.getBean(GuildService.class)))
                 .addEventListeners(new SlashCommandInteraction(context.getBean(GuildService.class), context.getBean(GuildMemberService.class), context.getBean(UserService.class), context.getBean(RoleService.class)))
+                .addEventListeners(new GuildMessageReactionEvent(context.getBean(GuildService.class), context.getBean(GuildMemberService.class), context.getBean(UserService.class), context.getBean(RoleService.class)))
                 .enableIntents(GatewayIntent.GUILD_MEMBERS)
                 .enableIntents(GatewayIntent.GUILD_PRESENCES)
+                .enableIntents(GatewayIntent.GUILD_MESSAGES)
+                .enableIntents(GatewayIntent.GUILD_MESSAGE_REACTIONS)
+                .enableIntents(GatewayIntent.GUILD_MESSAGE_TYPING)
+                .enableIntents(GatewayIntent.GUILD_EMOJIS_AND_STICKERS)
+                .enableIntents(GatewayIntent.MESSAGE_CONTENT)
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .build()
                 .awaitReady();
