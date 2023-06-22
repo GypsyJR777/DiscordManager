@@ -8,3 +8,10 @@
 
 ## Стек
 ![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white)  ![Spring](https://img.shields.io/badge/spring-%236DB33F.svg?style=for-the-badge&logo=spring&logoColor=white)  ![Postgres](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white)  ![Hibernate](https://img.shields.io/badge/Hibernate-59666C?style=for-the-badge&logo=Hibernate&logoColor=white) ![JDA](https://img.shields.io/badge/Discord-%25235865F2.svg?style=for-the-badge&logo=discord&logoColor=white&label=JDA&labelColor=blue&color=blue)
+
+## Инструкция по установке
+Для работы бота требуется PostgreSQL, а также ряд переменных окружения:
+- ${DISCORD_TOKEN} - токен дискорд-бота
+- ${DB_URL} - адрес БД (например, jdbc:postgresql://manager-bd:5432/discordbot?useSSL=false)
+- ${DB_USERNAME} - имя пользователя БД
+- ${DB_PASS} - пароль БД
