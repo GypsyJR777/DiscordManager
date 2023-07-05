@@ -25,11 +25,15 @@ public class DiscordGuild {
     @OneToMany(mappedBy = "guild")
     private Set<GuildMember> guildMembers;
 
-    private boolean haveLeaveTimer;
+    @Column(nullable = true)
+    private boolean haveLeaveTimer = false;
+
+    @Column(nullable = true, columnDefinition = "boolean default false")
+    private boolean haveBasicRole = false;
 
     @Column(nullable = true)
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "guild")
-    private List<DiscordRole> leaveTimerRoles;
+    private List<DiscordRole> roles;
 
     @Column(nullable = true)
     private String messageId;
@@ -37,7 +41,7 @@ public class DiscordGuild {
     public List<String> getLeaveTimerIds() {
         List<String> ids = new ArrayList<>();
 
-        leaveTimerRoles.forEach(it -> {
+        roles.forEach(it -> {
             ids.add(it.getId());
         });
 
@@ -47,14 +51,15 @@ public class DiscordGuild {
     public DiscordGuild(Guild guild) {
         id = guild.getId();
         haveLeaveTimer = false;
+        haveBasicRole = false;
         guildMembers = new HashSet<>();
-        leaveTimerRoles = new ArrayList<>();
+        roles = new ArrayList<>();
     }
 
     public void addRole(DiscordRole role) {
-        if (leaveTimerRoles == null || leaveTimerRoles.isEmpty())
-            leaveTimerRoles = new ArrayList<>();
+        if (roles == null || roles.isEmpty())
+            roles = new ArrayList<>();
 
-        leaveTimerRoles.add(role);
+        roles.add(role);
     }
 }

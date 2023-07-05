@@ -2,10 +2,12 @@ package com.github.gypsyjr777.discordmanager.event;
 
 import com.github.gypsyjr777.discordmanager.config.command.SlashCommand;
 import com.github.gypsyjr777.discordmanager.entity.DiscordGuild;
+import com.github.gypsyjr777.discordmanager.entity.DiscordRole;
 import com.github.gypsyjr777.discordmanager.entity.DiscordUser;
 import com.github.gypsyjr777.discordmanager.entity.GuildMember;
 import com.github.gypsyjr777.discordmanager.service.GuildMemberService;
 import com.github.gypsyjr777.discordmanager.service.GuildService;
+import com.github.gypsyjr777.discordmanager.service.RoleService;
 import com.github.gypsyjr777.discordmanager.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
@@ -30,13 +32,14 @@ public class ReadyEventListener extends ListenerAdapter {
     private final GuildService guildService;
     private final GuildMemberService guildMemberService;
     private final UserService userService;
-
+    private final RoleService roleService;
     @Autowired
-    public ReadyEventListener(ApplicationContext context, GuildService guildService, GuildMemberService guildMemberService, UserService userService) {
+    public ReadyEventListener(ApplicationContext context, GuildService guildService, GuildMemberService guildMemberService, UserService userService, RoleService roleService) {
         this.context = context;
         this.guildService = guildService;
         this.guildMemberService = guildMemberService;
         this.userService = userService;
+        this.roleService = roleService;
     }
 
     @Override
@@ -65,6 +68,10 @@ public class ReadyEventListener extends ListenerAdapter {
 
                 userService.saveGuildUser(user);
                 guildMemberService.saveGuildMember(guildMember);
+            });
+
+            guild.getRoles().forEach(role -> {
+                roleService.saveRole(new DiscordRole(role, discordGuild));
             });
 
         });

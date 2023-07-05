@@ -29,4 +29,8 @@ public class RoleService {
     public Optional<DiscordRole> findRoleByReaction(String reaction) {
         return roleRepository.findByReaction(reaction);
     }
+
+    public void deleteRole(DiscordRole role) {
+        roleRepository.delete(role);
+    }
 }

@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.hooks.SubscribeEvent;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,6 +19,7 @@ public class GuildMembersEvents extends ListenerAdapter {
     private final UserService userService;
     private final GuildService guildService;
 
+    @Autowired
     public GuildMembersEvents(UserService userService, GuildService guildService) {
         this.userService = userService;
         this.guildService = guildService;
