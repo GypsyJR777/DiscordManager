@@ -47,6 +47,10 @@ public class SlashCommandInteraction extends ListenerAdapter {
                 addReactionRole(event);
             } else if (event.getName().equals(SlashCommand.REACTION_ROLE_TEXT.getCommand())) {
                 addTextReactionRole(event);
+            }  else if (event.getName().equals(SlashCommand.LEAVE_TIMER_ON.getCommand())) {
+                leaveTimerOn(event);
+            } else if (event.getName().equals(SlashCommand.LEAVE_TIMER_OFF.getCommand())) {
+                leaveTimerOff(event);
             }
         }
     }
@@ -141,6 +145,26 @@ public class SlashCommandInteraction extends ListenerAdapter {
             }
 
             event.reply("Reaction message added").queue();
+        } else {
+            event.reply("For this action, you need administrator rights").queue();
+        }
+    }
+
+    private void leaveTimerOff(SlashCommandInteractionEvent event) {
+        if (event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+            DiscordGuild guild = guildService.findGuildById(event.getGuild().getId()).orElseThrow();
+            guild.setHaveLeaveTimer(false);
+            guildService.saveGuild(guild);
+        } else {
+            event.reply("For this action, you need administrator rights").queue();
+        }
+    }
+
+    private void leaveTimerOn(SlashCommandInteractionEvent event) {
+        if (event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+            DiscordGuild guild = guildService.findGuildById(event.getGuild().getId()).orElseThrow();
+            guild.setHaveLeaveTimer(true);
+            guildService.saveGuild(guild);
         } else {
             event.reply("For this action, you need administrator rights").queue();
         }
