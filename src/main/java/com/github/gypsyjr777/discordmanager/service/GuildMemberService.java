@@ -6,6 +6,9 @@ import com.github.gypsyjr777.discordmanager.entity.GuildMember;
 import com.github.gypsyjr777.discordmanager.repository.GuildMemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionManager;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +26,10 @@ public class GuildMemberService {
         guildMemberRepository.deleteByGuildAndMember(discordGuild, user);
     }
 
+    public void deleteAllByGuilds(DiscordGuild discordGuild) {
+        guildMemberRepository.deleteAllByGuild_Id(discordGuild.getId());
+    }
+
     public void updateMembersInfoRoles(DiscordUser user, DiscordGuild guild) {
         GuildMember guildMember = findGuildMemberByMemberAndGuild(user, guild).orElseThrow();
         guildMember.setLeaveTimer(true);
@@ -37,6 +44,7 @@ public class GuildMemberService {
         return guildMemberRepository.findAllByGuild(guild);
     }
 
+    @Transactional
     public void deleteGuildMember(GuildMember member) {
         guildMemberRepository.delete(member);
     }

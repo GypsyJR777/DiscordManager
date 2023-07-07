@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.dv8tion.jda.api.entities.User;
+import org.hibernate.annotations.Cascade;
 
 import java.util.HashSet;
 import java.util.Set;

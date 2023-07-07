@@ -34,4 +34,8 @@ public class GuildMember {
         this.member = member;
         this.guild = guild;
     }
+
+    public GuildMember(DiscordUser member) {
+        this.member = member;
+    }
 }

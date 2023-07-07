@@ -36,7 +36,7 @@ public class DiscordBotConfig {
                 .setEventManager(new AnnotatedEventManager())
                 .addEventListeners(new ReadyEventListener(context, context.getBean(GuildService.class), context.getBean(GuildMemberService.class), context.getBean(UserService.class), context.getBean(RoleService.class)))
                 .addEventListeners(new GuildVoiceEvents(context.getBean(UserService.class), context.getBean(GuildService.class)))
-                .addEventListeners(new GuildMembersEvents(context.getBean(UserService.class), context.getBean(GuildService.class)))
+                .addEventListeners(new GuildMembersEvents(context.getBean(UserService.class), context.getBean(GuildService.class), context.getBean(GuildMemberService.class)))
                 .addEventListeners(new SlashCommandInteraction(context.getBean(GuildService.class), context.getBean(GuildMemberService.class), context.getBean(UserService.class), context.getBean(RoleService.class)))
                 .addEventListeners(new GuildMessageReactionEvent(context.getBean(GuildService.class), context.getBean(GuildMemberService.class), context.getBean(UserService.class), context.getBean(RoleService.class)))
                 .addEventListeners(new GuildMessageEvent(context.getBean(UserService.class), context.getBean(GuildService.class)))

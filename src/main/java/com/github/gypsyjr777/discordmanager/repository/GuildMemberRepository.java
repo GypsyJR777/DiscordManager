@@ -4,6 +4,7 @@ import com.github.gypsyjr777.discordmanager.entity.DiscordGuild;
 import com.github.gypsyjr777.discordmanager.entity.DiscordUser;
 import com.github.gypsyjr777.discordmanager.entity.GuildMember;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -15,4 +16,8 @@ public interface GuildMemberRepository extends JpaRepository<GuildMember, Long> 
     List<GuildMember> findAllByGuild(DiscordGuild guild);
 
     void deleteByGuildAndMember(DiscordGuild guild, DiscordUser member);
+    void deleteAllByGuild_Id(String guildId);
+
+//    @Query ("DELETE FROM guild_member WHERE id = memberId")
+//    void deleteMember(Long id);
 }

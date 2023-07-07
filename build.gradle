@@ -24,10 +24,13 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.postgresql:postgresql:42.5.4'
     implementation 'org.springframework.boot:spring-boot-starter-batch'
+    testImplementation 'com.h2database:h2:2.1.214'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.instancio:instancio-junit:2.9.0'
+    testImplementation 'org.mockito:mockito-inline:2.13.0'
     implementation 'net.dv8tion:JDA:5.0.0-beta.10'
 }
 

@@ -30,4 +30,8 @@ public class DiscordRole {
         id = role.getId();
         this.guild = guild;
     }
+
+    public DiscordRole(Role role) {
+        id = role.getId();
+    }
 }

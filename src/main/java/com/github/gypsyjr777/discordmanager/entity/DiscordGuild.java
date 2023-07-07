@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.dv8tion.jda.api.entities.Guild;
+import org.hibernate.annotations.Cascade;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -22,8 +23,8 @@ public class DiscordGuild {
     private String id;
 
     @Column(nullable = true)
-    @OneToMany(mappedBy = "guild")
-    private Set<GuildMember> guildMembers;
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "guild", cascade = {CascadeType.PERSIST})
+    private Set<GuildMember> guildMembers = new HashSet<>();
 
     @Column(nullable = true)
     private boolean haveLeaveTimer = false;
@@ -32,8 +33,8 @@ public class DiscordGuild {
     private boolean haveBasicRole = false;
 
     @Column(nullable = true)
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "guild")
-    private List<DiscordRole> roles;
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "guild", cascade = {CascadeType.PERSIST})
+    private Set<DiscordRole> roles = new HashSet<>();
 
     @Column(nullable = true)
     private String messageId;
@@ -53,13 +54,17 @@ public class DiscordGuild {
         haveLeaveTimer = false;
         haveBasicRole = false;
         guildMembers = new HashSet<>();
-        roles = new ArrayList<>();
+        roles = new HashSet<>();
     }
 
     public void addRole(DiscordRole role) {
         if (roles == null || roles.isEmpty())
-            roles = new ArrayList<>();
+            roles = new HashSet<>();
 
         roles.add(role);
+    }
+
+    public void addGuildMember(GuildMember guildMember) {
+        guildMembers.add(guildMember);
     }
 }

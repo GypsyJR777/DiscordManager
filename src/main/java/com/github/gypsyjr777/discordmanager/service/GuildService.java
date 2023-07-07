@@ -10,6 +10,8 @@ import net.dv8tion.jda.api.entities.Guild;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -23,7 +25,6 @@ import java.util.Set;
 public class GuildService {
     @Autowired
     private ApplicationContext context;
-
     @Autowired
     private GuildMemberService memberService;
     @Autowired
@@ -63,14 +64,11 @@ public class GuildService {
         guildRepository.save(guild);
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void deleteGuild(DiscordGuild guild) {
-        guild.getRoles().forEach(role -> {
-            roleService.deleteRole(role);
-        });
+        guild.getRoles().clear();
 
-        guild.getGuildMembers().forEach(guildMember -> {
-            memberService.deleteGuildMember(guildMember);
-        });
+        guild.getGuildMembers().clear();
 
         guildRepository.delete(guild);
     }
