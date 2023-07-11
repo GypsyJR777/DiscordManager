@@ -20,15 +20,20 @@ public class DiscordUser {
 
     private String username;
 
-    @OneToMany(mappedBy = "member")
-    Set<GuildMember> guildMembers = new HashSet<>();
+//    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+//    @Column(nullable = true)
+//    Set<GuildMember> guildMembers = new HashSet<>();
 
     public DiscordUser(User user) {
         id = user.getId();
         username = user.getName();
     }
 
-    public void addGuildMember(GuildMember guildMember) {
-        guildMembers.add(guildMember);
-    }
+//    public void addGuildMember(GuildMember guildMember) {
+//        guildMembers.add(guildMember);
+//    }
+//
+//    public void removeGuildMember(GuildMember guildMember) {
+//        guildMembers.remove(guildMember);
+//    }
 }

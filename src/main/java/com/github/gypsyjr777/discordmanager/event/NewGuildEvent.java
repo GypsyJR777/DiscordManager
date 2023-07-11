@@ -15,6 +15,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.hooks.SubscribeEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -33,9 +34,10 @@ public class NewGuildEvent extends ListenerAdapter {
         this.roleService = roleService;
     }
 
-    // TODO убрать дубляж
+    //TODO убрать дубляж
     @Override
     @SubscribeEvent
+    @Transactional
     public void onGuildJoin(GuildJoinEvent event) {
         Guild guild = event.getGuild();
         DiscordGuild discordGuild = guildService.findGuildById(guild.getId()).orElse(new DiscordGuild(guild));
@@ -50,14 +52,17 @@ public class NewGuildEvent extends ListenerAdapter {
 
             userService.saveGuildUser(user);
             guildMemberService.saveGuildMember(guildMember);
+//            discordGuild.addGuildMember(guildMember);
         });
 
         guild.getRoles().forEach(role -> {
-            roleService.saveRole(new DiscordRole(role, discordGuild));
+            DiscordRole discordRole = new DiscordRole(role, discordGuild);
+            roleService.saveRole(discordRole);
+//            discordGuild.addRole(discordRole);
         });
     }
 
-    // TODO протестировать
+    //TODO протестировать
     @Override
     @SubscribeEvent
     public void onGuildLeave(GuildLeaveEvent event) {

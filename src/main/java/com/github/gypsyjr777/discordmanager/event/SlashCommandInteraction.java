@@ -83,7 +83,7 @@ public class SlashCommandInteraction extends ListenerAdapter {
             role.setVip(true);
             roleService.saveRole(role);
 
-            guild.addRole(role);
+//            guild.addRole(role);
             guildService.saveGuild(guild);
 
             event.getGuild().getMembers().forEach(member -> {

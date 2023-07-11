@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDateTime;
 
@@ -17,10 +18,12 @@ public class GuildMember {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "member_id")
     private DiscordUser member;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "guild_id")
     private DiscordGuild guild;

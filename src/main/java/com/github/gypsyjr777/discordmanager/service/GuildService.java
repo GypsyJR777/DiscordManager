@@ -10,20 +10,19 @@ import net.dv8tion.jda.api.entities.Guild;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class GuildService {
     @Autowired
     private ApplicationContext context;
-
     @Autowired
     private GuildMemberService memberService;
     @Autowired
@@ -32,7 +31,7 @@ public class GuildService {
     private DiscordGuildRepository guildRepository;
 
     public void findAndKickAfk(DiscordGuild guild) {
-        Set<GuildMember> guildMembers = guild.getGuildMembers();
+        Set<GuildMember> guildMembers = new HashSet<>(memberService.getAllGuildMembers(guild));
         guildMembers.forEach(user -> {
             LocalDateTime userLastVisit = user.getLastOut();
             if (ChronoUnit.DAYS.between(userLastVisit, LocalDateTime.now()) > 30 && !user.isLeaveTimer()) {
@@ -63,14 +62,16 @@ public class GuildService {
         guildRepository.save(guild);
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void deleteGuild(DiscordGuild guild) {
-        guild.getRoles().forEach(role -> {
-            roleService.deleteRole(role);
-        });
 
-        guild.getGuildMembers().forEach(guildMember -> {
-            memberService.deleteGuildMember(guildMember);
-        });
+        roleService.getAllRolesByGuild(guild).forEach(role ->
+                roleService.deleteRole(role)
+        );
+
+        memberService.getAllGuildMembers(guild).forEach(guildMember ->
+                memberService.deleteGuildMember(guildMember)
+        );
 
         guildRepository.delete(guild);
     }
