@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.dv8tion.jda.api.entities.Guild;
+import org.hibernate.annotations.Cascade;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -21,40 +22,49 @@ public class DiscordGuild {
     @Id
     private String id;
 
-    @Column(nullable = true)
-    @OneToMany(mappedBy = "guild")
-    private Set<GuildMember> guildMembers;
-
-    private boolean haveLeaveTimer;
+//    @Column(nullable = true)
+//    @OneToMany(fetch = FetchType.EAGER, mappedBy = "guild", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private Set<GuildMember> guildMembers = new HashSet<>();
 
     @Column(nullable = true)
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "guild")
-    private List<DiscordRole> leaveTimerRoles;
+    private boolean haveLeaveTimer = false;
+
+    @Column(nullable = true, columnDefinition = "boolean default false")
+    private boolean haveBasicRole = false;
+
+//    @Column(nullable = true)
+//    @OneToMany(fetch = FetchType.EAGER, mappedBy = "guild", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private Set<DiscordRole> roles = new HashSet<>();
 
     @Column(nullable = true)
     private String messageId;
 
-    public List<String> getLeaveTimerIds() {
-        List<String> ids = new ArrayList<>();
-
-        leaveTimerRoles.forEach(it -> {
-            ids.add(it.getId());
-        });
-
-        return ids;
-    }
+//    public List<String> getLeaveTimerIds() {
+//        List<String> ids = new ArrayList<>();
+//
+//        roles.forEach(it -> {
+//            ids.add(it.getId());
+//        });
+//
+//        return ids;
+//    }
 
     public DiscordGuild(Guild guild) {
         id = guild.getId();
         haveLeaveTimer = false;
-        guildMembers = new HashSet<>();
-        leaveTimerRoles = new ArrayList<>();
+        haveBasicRole = false;
+//        guildMembers = new HashSet<>();
+//        roles = new HashSet<>();
     }
 
-    public void addRole(DiscordRole role) {
-        if (leaveTimerRoles == null || leaveTimerRoles.isEmpty())
-            leaveTimerRoles = new ArrayList<>();
+//    public void addRole(DiscordRole role) {
+//        if (roles == null || roles.isEmpty())
+//            roles = new HashSet<>();
+//
+//        roles.add(role);
+//    }
 
-        leaveTimerRoles.add(role);
-    }
+//    public void addGuildMember(GuildMember guildMember) {
+//        guildMembers.add(guildMember);
+//    }
 }

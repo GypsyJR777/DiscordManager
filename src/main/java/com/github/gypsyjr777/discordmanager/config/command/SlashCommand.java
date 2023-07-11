@@ -16,6 +16,14 @@ public enum SlashCommand {
             .setGuildOnly(true)
             .addOption(OptionType.ROLE, "role", "Role for protecting", true),
             "leavetimer"),
+    LEAVE_TIMER_ON(Commands
+            .slash("leavetimer_on", "On afk timer")
+            .setGuildOnly(true),
+            "leavetimer_on"),
+    LEAVE_TIMER_OFF(Commands
+            .slash("leavetimer_off", "Off afk timer")
+            .setGuildOnly(true),
+            "leavetimer_off"),
     ANNOUNCEMENT(Commands
             .slash("announce", "Publish an announce")
             .setGuildOnly(true)

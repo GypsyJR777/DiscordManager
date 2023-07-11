@@ -36,4 +36,8 @@ public class GuildMemberService {
     public List<GuildMember> getAllGuildMembers(DiscordGuild guild) {
         return guildMemberRepository.findAllByGuild(guild);
     }
+
+    public void deleteGuildMember(GuildMember member) {
+        guildMemberRepository.delete(member);
+    }
 }
