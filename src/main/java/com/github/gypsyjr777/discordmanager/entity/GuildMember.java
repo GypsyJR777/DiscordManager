@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "guild_member")
+@Table(name = "guild_member", uniqueConstraints = { @UniqueConstraint(columnNames = { "member_id", "guild_id" }) } )
 @Getter
 @Setter
 @NoArgsConstructor

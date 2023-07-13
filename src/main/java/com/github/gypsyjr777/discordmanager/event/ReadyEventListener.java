@@ -1,14 +1,8 @@
 package com.github.gypsyjr777.discordmanager.event;
 
 import com.github.gypsyjr777.discordmanager.config.command.SlashCommand;
-import com.github.gypsyjr777.discordmanager.entity.DiscordGuild;
-import com.github.gypsyjr777.discordmanager.entity.DiscordRole;
-import com.github.gypsyjr777.discordmanager.entity.DiscordUser;
-import com.github.gypsyjr777.discordmanager.entity.GuildMember;
-import com.github.gypsyjr777.discordmanager.service.GuildMemberService;
-import com.github.gypsyjr777.discordmanager.service.GuildService;
-import com.github.gypsyjr777.discordmanager.service.RoleService;
-import com.github.gypsyjr777.discordmanager.service.UserService;
+import com.github.gypsyjr777.discordmanager.entity.*;
+import com.github.gypsyjr777.discordmanager.service.*;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
@@ -23,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -33,13 +28,15 @@ public class ReadyEventListener extends ListenerAdapter {
     private final GuildMemberService guildMemberService;
     private final UserService userService;
     private final RoleService roleService;
+    private final UserRoleService userRoleService;
     @Autowired
-    public ReadyEventListener(ApplicationContext context, GuildService guildService, GuildMemberService guildMemberService, UserService userService, RoleService roleService) {
+    public ReadyEventListener(ApplicationContext context, GuildService guildService, GuildMemberService guildMemberService, UserService userService, RoleService roleService, UserRoleService userRoleService) {
         this.context = context;
         this.guildService = guildService;
         this.guildMemberService = guildMemberService;
         this.userService = userService;
         this.roleService = roleService;
+        this.userRoleService = userRoleService;
     }
 
     @Override
@@ -57,6 +54,10 @@ public class ReadyEventListener extends ListenerAdapter {
             DiscordGuild discordGuild = guildService.findGuildById(guild.getId()).orElse(new DiscordGuild(guild));
             guildService.saveGuild(discordGuild);
 
+            guild.getRoles().forEach(role -> {
+                roleService.saveRole(new DiscordRole(role, discordGuild));
+            });
+
             List<Member> members = guild.getMembers();
             members.forEach(member -> {
                 DiscordUser user = userService.findByIdDiscordUser(member.getUser().getId()).orElse(new DiscordUser(member.getUser()));
@@ -68,10 +69,13 @@ public class ReadyEventListener extends ListenerAdapter {
 
                 userService.saveGuildUser(user);
                 guildMemberService.saveGuildMember(guildMember);
-            });
 
-            guild.getRoles().forEach(role -> {
-                roleService.saveRole(new DiscordRole(role, discordGuild));
+                member.getRoles().forEach(role -> {
+                    DiscordRole discordRole = roleService.findRoleById(role.getId()).orElseThrow();
+                    UserRole userRole = userRoleService.getByRoleAndUser(discordRole, user).orElse(new UserRole(discordRole, user));
+
+                    userRoleService.saveUserRole(userRole);
+                });
             });
 
         });
