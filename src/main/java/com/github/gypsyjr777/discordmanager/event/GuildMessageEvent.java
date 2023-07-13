@@ -28,7 +28,9 @@ public class GuildMessageEvent extends ListenerAdapter {
     public void onMessageReceived(MessageReceivedEvent event) {
         Guild guild = event.getGuild();
         DiscordGuild discordGuild = guildService.findGuildById(guild.getId()).orElseThrow();
-
+        if (guild.getCommunityUpdatesChannel() != null && guild.getCommunityUpdatesChannel().getId().equals(event.getChannel().getId())){
+            return;
+        }
         Member member = event.getMember();
         userService.updateDateUser(member.getUser(), discordGuild);
     }
