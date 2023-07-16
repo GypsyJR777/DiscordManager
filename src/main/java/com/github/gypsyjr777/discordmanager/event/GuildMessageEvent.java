@@ -30,7 +30,10 @@ public class GuildMessageEvent extends ListenerAdapter {
         DiscordGuild discordGuild = guildService.findGuildById(guild.getId()).orElseThrow();
         if (guild.getCommunityUpdatesChannel() != null && guild.getCommunityUpdatesChannel().getId().equals(event.getChannel().getId())){
             return;
+        } else if (event.getAuthor().isBot()){
+            return;
         }
+
         Member member = event.getMember();
         userService.updateDateUser(member.getUser(), discordGuild);
     }
