@@ -7,6 +7,7 @@ import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "guild_member", uniqueConstraints = { @UniqueConstraint(columnNames = { "member_id", "guild_id" }) } )
@@ -15,8 +16,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class GuildMember {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @NotNull
     @ManyToOne
