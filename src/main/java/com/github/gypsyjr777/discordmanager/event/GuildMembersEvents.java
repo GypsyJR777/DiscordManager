@@ -9,10 +9,14 @@ import com.github.gypsyjr777.discordmanager.service.RoleService;
 import com.github.gypsyjr777.discordmanager.service.UserService;
 import com.github.gypsyjr777.discordmanager.utils.CheckLeaveTimer;
 import lombok.extern.slf4j.Slf4j;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
+import net.dv8tion.jda.api.events.guild.member.update.GenericGuildMemberUpdateEvent;
+import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.hooks.SubscribeEvent;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,12 +61,5 @@ public class GuildMembersEvents extends ListenerAdapter {
         GuildMember member = memberService.findGuildMemberByMemberAndGuild(user, discordGuild).orElseThrow();
 
         memberService.deleteGuildMember(member);
-//        user.removeGuildMember(member);
-//        userService.saveGuildUser(user);
-
-//        memberService.deleteGuildUser(
-//                userService.findByIdDiscordUser(event.getMember().getUser().getId()).orElseThrow(),
-//                discordGuild
-//        );
     }
 }

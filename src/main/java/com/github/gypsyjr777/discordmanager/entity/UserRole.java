@@ -16,7 +16,6 @@ public class UserRole {
     @Id
     private UUID id;
 
-
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "role_id")
     private DiscordRole role;
