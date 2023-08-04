@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameE
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.hooks.SubscribeEvent;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,11 +33,11 @@ public class GuildMembersEvents extends ListenerAdapter {
     private final RoleService roleService;
 
     @Autowired
-    public GuildMembersEvents(UserService userService, GuildService guildService, GuildMemberService memberService, com.github.gypsyjr777.discordmanager.service.RoleService roleService) {
-        this.userService = userService;
-        this.guildService = guildService;
-        this.memberService = memberService;
-        this.roleService = roleService;
+    public GuildMembersEvents(ApplicationContext context) {
+        this.userService = context.getBean(UserService.class);
+        this.guildService = context.getBean(GuildService.class);
+        this.memberService = context.getBean(GuildMemberService.class);
+        this.roleService = context.getBean(RoleService.class);
     }
 
     @Override

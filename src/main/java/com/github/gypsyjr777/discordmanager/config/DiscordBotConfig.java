@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.hooks.AnnotatedEventManager;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
+import org.hibernate.boot.archive.scan.spi.ScanResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -31,13 +32,13 @@ public class DiscordBotConfig {
                 .enableIntents(GatewayIntent.MESSAGE_CONTENT) // enables explicit access to message.getContentDisplay()
                 .setActivity(Activity.of(Activity.ActivityType.PLAYING, "Bot`s simple life"))
                 .setEventManager(new AnnotatedEventManager())
-                .addEventListeners(new ReadyEventListener(context, context.getBean(GuildService.class), context.getBean(GuildMemberService.class), context.getBean(UserService.class), context.getBean(RoleService.class), context.getBean(UserRoleService.class)))
-                .addEventListeners(new GuildVoiceEvents(context.getBean(UserService.class), context.getBean(GuildService.class)))
-                .addEventListeners(new GuildMembersEvents(context.getBean(UserService.class), context.getBean(GuildService.class), context.getBean(GuildMemberService.class), context.getBean(RoleService.class)))
-                .addEventListeners(new SlashCommandInteraction(context.getBean(GuildService.class), context.getBean(GuildMemberService.class), context.getBean(UserService.class), context.getBean(RoleService.class)))
-                .addEventListeners(new GuildMessageReactionEvent(context.getBean(GuildService.class), context.getBean(GuildMemberService.class), context.getBean(UserService.class), context.getBean(RoleService.class)))
-                .addEventListeners(new GuildMessageEvent(context.getBean(UserService.class), context.getBean(GuildService.class)))
-                .addEventListeners(new NewGuildEvent(context.getBean(UserService.class), context.getBean(GuildService.class), context.getBean(GuildMemberService.class), context.getBean(RoleService.class), context.getBean(UserRoleService.class)))
+                .addEventListeners(new ReadyEventListener(context))
+                .addEventListeners(new GuildVoiceEvents(context))
+                .addEventListeners(new GuildMembersEvents(context))
+                .addEventListeners(new SlashCommandInteraction(context))
+                .addEventListeners(new GuildMessageReactionEvent(context))
+                .addEventListeners(new GuildMessageEvent(context))
+                .addEventListeners(new NewGuildEvent(context))
                 .enableIntents(GatewayIntent.GUILD_MEMBERS)
                 .enableIntents(GatewayIntent.GUILD_PRESENCES)
                 .enableIntents(GatewayIntent.GUILD_MESSAGES)

@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.hooks.SubscribeEvent;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,9 +19,9 @@ public class GuildMessageEvent extends ListenerAdapter {
     private final GuildService guildService;
 
     @Autowired
-    public GuildMessageEvent(UserService userService, GuildService guildService) {
-        this.userService = userService;
-        this.guildService = guildService;
+    public GuildMessageEvent(ApplicationContext context) {
+        this.userService = context.getBean(UserService.class);
+        this.guildService = context.getBean(GuildService.class);
     }
 
     @Override

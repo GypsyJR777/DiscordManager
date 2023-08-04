@@ -16,23 +16,24 @@ import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.hooks.SubscribeEvent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
-
-import java.util.Objects;
 
 @Service
 @Slf4j
 public class SlashCommandInteraction extends ListenerAdapter {
     private final GuildService guildService;
-    private final GuildMemberService guildMemberService;
+    private final GuildMemberService memberService;
     private final UserService userService;
     private final RoleService roleService;
 
-    public SlashCommandInteraction(GuildService guildService, GuildMemberService guildMemberService, UserService userService, RoleService roleService) {
-        this.guildService = guildService;
-        this.guildMemberService = guildMemberService;
-        this.userService = userService;
-        this.roleService = roleService;
+    @Autowired
+    public SlashCommandInteraction(ApplicationContext context) {
+        this.userService = context.getBean(UserService.class);
+        this.guildService = context.getBean(GuildService.class);
+        this.memberService = context.getBean(GuildMemberService.class);
+        this.roleService = context.getBean(RoleService.class);
     }
 
     @Override
@@ -88,13 +89,13 @@ public class SlashCommandInteraction extends ListenerAdapter {
 
             event.getGuild().getMembers().forEach(member -> {
                 if (member.getRoles().stream().anyMatch(r -> r.getId().equals(role.getId()))) {
-                    GuildMember guildMember = guildMemberService.findGuildMemberByMemberAndGuild(
+                    GuildMember guildMember = memberService.findGuildMemberByMemberAndGuild(
                             userService.findByIdDiscordUser(member.getUser().getId()).orElseThrow(), guild
                     ).orElseThrow();
 
                     guildMember.setLeaveTimer(true);
 
-                    guildMemberService.saveGuildMember(guildMember);
+                    memberService.saveGuildMember(guildMember);
                 }
             });
 

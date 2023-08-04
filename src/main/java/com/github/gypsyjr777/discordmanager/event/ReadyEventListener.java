@@ -30,13 +30,13 @@ public class ReadyEventListener extends ListenerAdapter {
     private final RoleService roleService;
     private final UserRoleService userRoleService;
     @Autowired
-    public ReadyEventListener(ApplicationContext context, GuildService guildService, GuildMemberService guildMemberService, UserService userService, RoleService roleService, UserRoleService userRoleService) {
+    public ReadyEventListener(ApplicationContext context) {
         this.context = context;
-        this.guildService = guildService;
-        this.guildMemberService = guildMemberService;
-        this.userService = userService;
-        this.roleService = roleService;
-        this.userRoleService = userRoleService;
+        this.guildService = context.getBean(GuildService.class);
+        this.guildMemberService = context.getBean(GuildMemberService.class);
+        this.userService = context.getBean(UserService.class);
+        this.roleService = context.getBean(RoleService.class);
+        this.userRoleService = context.getBean(UserRoleService.class);
     }
 
     @Override
