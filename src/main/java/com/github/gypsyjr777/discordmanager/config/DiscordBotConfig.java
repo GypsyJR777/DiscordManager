@@ -37,6 +37,7 @@ public class DiscordBotConfig {
                 .addEventListeners(new GuildMessageReactionEvent(context))
                 .addEventListeners(new GuildMessageEvent(context))
                 .addEventListeners(new NewGuildEvent(context))
+                .addEventListeners(new GuildNewsEvent(context))
                 .enableIntents(GatewayIntent.GUILD_MEMBERS)
                 .enableIntents(GatewayIntent.GUILD_PRESENCES)
                 .enableIntents(GatewayIntent.GUILD_MESSAGES)
