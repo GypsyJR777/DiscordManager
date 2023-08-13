@@ -165,6 +165,8 @@ public class SlashCommandInteraction extends ListenerAdapter {
             DiscordGuild guild = guildService.findGuildById(event.getGuild().getId()).orElseThrow();
             guild.setHaveLeaveTimer(false);
             guildService.saveGuild(guild);
+
+            event.reply("Leave timer is off").queue();
         } else {
             event.reply("For this action, you need administrator rights").queue();
         }
@@ -175,6 +177,8 @@ public class SlashCommandInteraction extends ListenerAdapter {
             DiscordGuild guild = guildService.findGuildById(event.getGuild().getId()).orElseThrow();
             guild.setHaveLeaveTimer(true);
             guildService.saveGuild(guild);
+
+            event.reply("Leave timer is on").queue();
         } else {
             event.reply("For this action, you need administrator rights").queue();
         }
@@ -186,6 +190,8 @@ public class SlashCommandInteraction extends ListenerAdapter {
             guild.setLogMemberChannel(event.getOption("channel").getAsString());
             guild.setHaveLogMember(true);
             guildService.saveGuild(guild);
+
+            event.reply("Member logging is on").queue();
         } else {
             event.reply("For this action, you need administrator rights").queue();
         }
@@ -197,6 +203,8 @@ public class SlashCommandInteraction extends ListenerAdapter {
             guild.setLogMemberChannel(null);
             guild.setHaveLogMember(false);
             guildService.saveGuild(guild);
+
+            event.reply("Member logging is off").queue();
         } else {
             event.reply("For this action, you need administrator rights").queue();
         }
@@ -208,6 +216,8 @@ public class SlashCommandInteraction extends ListenerAdapter {
             guild.setLogGuildChannel(event.getOption("channel").getAsString());
             guild.setHaveLogGuild(true);
             guildService.saveGuild(guild);
+
+            event.reply("Guild logging is on").queue();
         } else {
             event.reply("For this action, you need administrator rights").queue();
         }
@@ -219,6 +229,8 @@ public class SlashCommandInteraction extends ListenerAdapter {
             guild.setLogGuildChannel(null);
             guild.setHaveLogGuild(false);
             guildService.saveGuild(guild);
+
+            event.reply("Guild logging is off").queue();
         } else {
             event.reply("For this action, you need administrator rights").queue();
         }
