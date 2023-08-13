@@ -54,7 +54,17 @@ public enum SlashCommand {
             .slash("memberslog_off", "Turn off members logging")
             .setGuildOnly(true)
             .addOption(OptionType.CHANNEL, "channel", "Channel for publishing", true),
-            "memberslog_off");
+            "memberslog_off"),
+    GUILD_LOG_ON(Commands
+            .slash("guildlog_on", "Turn on guild logging")
+            .setGuildOnly(true)
+            .addOption(OptionType.CHANNEL, "channel", "Channel for publishing", true),
+            "mguildlog_on"),
+    GUILD_LOG_OFF(Commands
+            .slash("mguildlog_off", "Turn off guild logging")
+            .setGuildOnly(true)
+            .addOption(OptionType.CHANNEL, "channel", "Channel for publishing", true),
+            "mguildlog_off");
 
     private final SlashCommandData slashCommandData;
     private final String command;

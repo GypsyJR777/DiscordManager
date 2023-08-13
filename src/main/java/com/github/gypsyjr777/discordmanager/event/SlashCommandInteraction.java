@@ -57,6 +57,10 @@ public class SlashCommandInteraction extends ListenerAdapter {
                 memberLoggingOn(event);
             } else if (event.getName().equals(SlashCommand.MEMBER_LOG_OFF.getCommand())) {
                 memberLoggingOff(event);
+            } else if (event.getName().equals(SlashCommand.GUILD_LOG_ON.getCommand())) {
+                guildLogOn(event);
+            } else if (event.getName().equals(SlashCommand.GUILD_LOG_OFF.getCommand())) {
+                guildLogOff(event);
             }
         }
     }
@@ -192,6 +196,28 @@ public class SlashCommandInteraction extends ListenerAdapter {
             DiscordGuild guild = guildService.findGuildById(event.getGuild().getId()).orElseThrow();
             guild.setLogMemberChannel(null);
             guild.setHaveLogMember(false);
+            guildService.saveGuild(guild);
+        } else {
+            event.reply("For this action, you need administrator rights").queue();
+        }
+    }
+
+    private void guildLogOn(SlashCommandInteractionEvent event) {
+        if (event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+            DiscordGuild guild = guildService.findGuildById(event.getGuild().getId()).orElseThrow();
+            guild.setLogGuildChannel(event.getOption("channel").getAsString());
+            guild.setHaveLogGuild(true);
+            guildService.saveGuild(guild);
+        } else {
+            event.reply("For this action, you need administrator rights").queue();
+        }
+    }
+
+    private void guildLogOff(SlashCommandInteractionEvent event) {
+        if (event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+            DiscordGuild guild = guildService.findGuildById(event.getGuild().getId()).orElseThrow();
+            guild.setLogGuildChannel(null);
+            guild.setHaveLogGuild(false);
             guildService.saveGuild(guild);
         } else {
             event.reply("For this action, you need administrator rights").queue();
