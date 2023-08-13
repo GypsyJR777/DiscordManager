@@ -44,7 +44,17 @@ public enum SlashCommand {
             .addOption(OptionType.STRING, "text", "Announce text", true)
             .addOption(OptionType.CHANNEL, "channel", "Channel for publishing", true)
             .addOption(OptionType.STRING, "title", "Announce title", false),
-            "reactionrole_text");
+            "reactionrole_text"),
+    MEMBER_LOG_ON(Commands
+            .slash("memberslog_on", "Turn on members logging")
+            .setGuildOnly(true)
+            .addOption(OptionType.CHANNEL, "channel", "Channel for publishing", true),
+            "memberslog_on"),
+    MEMBER_LOG_OFF(Commands
+            .slash("memberslog_off", "Turn off members logging")
+            .setGuildOnly(true)
+            .addOption(OptionType.CHANNEL, "channel", "Channel for publishing", true),
+            "memberslog_off");
 
     private final SlashCommandData slashCommandData;
     private final String command;

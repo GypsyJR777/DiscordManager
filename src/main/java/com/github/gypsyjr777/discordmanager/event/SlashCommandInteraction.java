@@ -8,6 +8,7 @@ import com.github.gypsyjr777.discordmanager.service.GuildMemberService;
 import com.github.gypsyjr777.discordmanager.service.GuildService;
 import com.github.gypsyjr777.discordmanager.service.RoleService;
 import com.github.gypsyjr777.discordmanager.service.UserService;
+import com.github.gypsyjr777.discordmanager.utils.EmbedMessage;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -52,6 +53,10 @@ public class SlashCommandInteraction extends ListenerAdapter {
                 leaveTimerOn(event);
             } else if (event.getName().equals(SlashCommand.LEAVE_TIMER_OFF.getCommand())) {
                 leaveTimerOff(event);
+            } else if (event.getName().equals(SlashCommand.MEMBER_LOG_ON.getCommand())) {
+                memberLoggingOn(event);
+            } else if (event.getName().equals(SlashCommand.MEMBER_LOG_OFF.getCommand())) {
+                memberLoggingOff(event);
             }
         }
     }
@@ -67,7 +72,7 @@ public class SlashCommandInteraction extends ListenerAdapter {
 
             textChannel
                     .sendMessage("")
-                    .setEmbeds(createEmbedMessage(event.getOption("title").getAsString().replace("\\n", "\n"), event.getOption("text").getAsString().replace("\\n", "\n")).build())
+                    .setEmbeds(EmbedMessage.createMessageEmbed(event.getOption("title").getAsString().replace("\\n", "\n"), event.getOption("text").getAsString().replace("\\n", "\n")))
                     .queue();
             event.reply("The announcement is published").queue();
         } else {
@@ -140,7 +145,7 @@ public class SlashCommandInteraction extends ListenerAdapter {
             } else {
                 String messageId = textChannel
                         .sendMessage("")
-                        .setEmbeds(createEmbedMessage(title.replace("\\n", "\n"), text.replace("\\n", "\n")).build()).complete().getId();
+                        .setEmbeds(EmbedMessage.createMessageEmbed(title.replace("\\n", "\n"), text.replace("\\n", "\n"))).complete().getId();
                 guild.setMessageId(messageId);
                 guildService.saveGuild(guild);
             }
@@ -171,11 +176,25 @@ public class SlashCommandInteraction extends ListenerAdapter {
         }
     }
 
-    private EmbedBuilder createEmbedMessage(String title, String text) {
-        EmbedBuilder eb = new EmbedBuilder();
-        eb.setTitle(title);
-        eb.setDescription(text);
+    private void memberLoggingOn(SlashCommandInteractionEvent event) {
+        if (event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+            DiscordGuild guild = guildService.findGuildById(event.getGuild().getId()).orElseThrow();
+            guild.setLogMemberChannel(event.getOption("channel").getAsString());
+            guild.setHaveLogMember(true);
+            guildService.saveGuild(guild);
+        } else {
+            event.reply("For this action, you need administrator rights").queue();
+        }
+    }
 
-        return eb;
+    private void memberLoggingOff(SlashCommandInteractionEvent event) {
+        if (event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+            DiscordGuild guild = guildService.findGuildById(event.getGuild().getId()).orElseThrow();
+            guild.setLogMemberChannel(null);
+            guild.setHaveLogMember(false);
+            guildService.saveGuild(guild);
+        } else {
+            event.reply("For this action, you need administrator rights").queue();
+        }
     }
 }
