@@ -20,7 +20,6 @@ public class DiscordRole {
     private String id;
 
     @ManyToOne
-//    @JoinColumn(name = "guild_id", nullable = true)
     private DiscordGuild guild;
 
     @Column(nullable = true)

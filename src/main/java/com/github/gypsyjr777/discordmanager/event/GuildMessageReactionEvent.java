@@ -6,24 +6,24 @@ import com.github.gypsyjr777.discordmanager.service.GuildMemberService;
 import com.github.gypsyjr777.discordmanager.service.GuildService;
 import com.github.gypsyjr777.discordmanager.service.RoleService;
 import com.github.gypsyjr777.discordmanager.service.UserService;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.hooks.SubscribeEvent;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 @Service
 public class GuildMessageReactionEvent extends ListenerAdapter {
     private final GuildService guildService;
-    private final GuildMemberService guildMemberService;
+    private final GuildMemberService memberService;
     private final UserService userService;
     private final RoleService roleService;
 
-    public GuildMessageReactionEvent(GuildService guildService, GuildMemberService guildMemberService, UserService userService, RoleService roleService) {
-        this.guildService = guildService;
-        this.guildMemberService = guildMemberService;
-        this.userService = userService;
-        this.roleService = roleService;
+    public GuildMessageReactionEvent(ApplicationContext context) {
+        this.userService = context.getBean(UserService.class);
+        this.guildService = context.getBean(GuildService.class);
+        this.memberService = context.getBean(GuildMemberService.class);
+        this.roleService = context.getBean(RoleService.class);
     }
 
     @Override

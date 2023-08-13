@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.events.role.RoleDeleteEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.hooks.SubscribeEvent;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,17 +23,17 @@ import java.util.Set;
 public class NewGuildEvent extends ListenerAdapter {
     private final UserService userService;
     private final GuildService guildService;
-    private final GuildMemberService guildMemberService;
+    private final GuildMemberService memberService;
     private final RoleService roleService;
     private final UserRoleService userRoleService;
 
     @Autowired
-    public NewGuildEvent(UserService userService, GuildService guildService, GuildMemberService guildMemberService, RoleService roleService, UserRoleService userRoleService) {
-        this.userService = userService;
-        this.guildService = guildService;
-        this.guildMemberService = guildMemberService;
-        this.roleService = roleService;
-        this.userRoleService = userRoleService;
+    public NewGuildEvent(ApplicationContext context) {
+        this.userService = context.getBean(UserService.class);
+        this.guildService = context.getBean(GuildService.class);
+        this.memberService = context.getBean(GuildMemberService.class);
+        this.roleService = context.getBean(RoleService.class);
+        this.userRoleService = context.getBean(UserRoleService.class);
     }
 
     //TODO убрать дубляж
@@ -45,14 +46,14 @@ public class NewGuildEvent extends ListenerAdapter {
         guildService.saveGuild(discordGuild);
         guild.getMembers().forEach(member -> {
             DiscordUser user = userService.findByIdDiscordUser(member.getUser().getId()).orElse(new DiscordUser(member.getUser()));
-            GuildMember guildMember = guildMemberService.findGuildMemberByMemberAndGuild(user, discordGuild).orElse(new GuildMember(user, discordGuild));
+            GuildMember guildMember = memberService.findGuildMemberByMemberAndGuild(user, discordGuild).orElse(new GuildMember(user, discordGuild));
 
             if (guildMember.getLastOut() == null) {
                 guildMember.setLastOut(LocalDateTime.now());
             }
 
             userService.saveGuildUser(user);
-            guildMemberService.saveGuildMember(guildMember);
+            memberService.saveGuildMember(guildMember);
 //            discordGuild.addGuildMember(guildMember);
         });
 
@@ -103,9 +104,9 @@ public class NewGuildEvent extends ListenerAdapter {
             UserRole userRole = new UserRole(discordRole, discordUser);
 
             if (discordRole.isVip()) {
-                GuildMember guildMember = guildMemberService.findGuildMemberByMemberAndGuild(discordUser, guildService.findGuildById(event.getGuild().getId()).orElseThrow()).orElseThrow();
+                GuildMember guildMember = memberService.findGuildMemberByMemberAndGuild(discordUser, guildService.findGuildById(event.getGuild().getId()).orElseThrow()).orElseThrow();
                 guildMember.setLeaveTimer(true);
-                guildMemberService.saveGuildMember(guildMember);
+                memberService.saveGuildMember(guildMember);
             }
             userRoleService.saveUserRole(userRole);
         });
@@ -125,9 +126,9 @@ public class NewGuildEvent extends ListenerAdapter {
         userRoles.forEach(userRole -> {
             DiscordUser user = userRole.getUser();
             if (userRoleService.getAllByUser(user).stream().noneMatch(it -> it.getRole().isVip())) {
-                GuildMember guildMember = guildMemberService.findGuildMemberByMemberAndGuild(user, guild).orElseThrow();
+                GuildMember guildMember = memberService.findGuildMemberByMemberAndGuild(user, guild).orElseThrow();
                 guildMember.setLeaveTimer(false);
-                guildMemberService.saveGuildMember(guildMember);
+                memberService.saveGuildMember(guildMember);
             }
 
             userRoleService.deleteUserRole(userRole);

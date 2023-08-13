@@ -8,6 +8,7 @@ import com.github.gypsyjr777.discordmanager.service.GuildMemberService;
 import com.github.gypsyjr777.discordmanager.service.GuildService;
 import com.github.gypsyjr777.discordmanager.service.RoleService;
 import com.github.gypsyjr777.discordmanager.service.UserService;
+import com.github.gypsyjr777.discordmanager.utils.EmbedMessage;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -16,23 +17,24 @@ import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.hooks.SubscribeEvent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
-
-import java.util.Objects;
 
 @Service
 @Slf4j
 public class SlashCommandInteraction extends ListenerAdapter {
     private final GuildService guildService;
-    private final GuildMemberService guildMemberService;
+    private final GuildMemberService memberService;
     private final UserService userService;
     private final RoleService roleService;
 
-    public SlashCommandInteraction(GuildService guildService, GuildMemberService guildMemberService, UserService userService, RoleService roleService) {
-        this.guildService = guildService;
-        this.guildMemberService = guildMemberService;
-        this.userService = userService;
-        this.roleService = roleService;
+    @Autowired
+    public SlashCommandInteraction(ApplicationContext context) {
+        this.userService = context.getBean(UserService.class);
+        this.guildService = context.getBean(GuildService.class);
+        this.memberService = context.getBean(GuildMemberService.class);
+        this.roleService = context.getBean(RoleService.class);
     }
 
     @Override
@@ -51,6 +53,10 @@ public class SlashCommandInteraction extends ListenerAdapter {
                 leaveTimerOn(event);
             } else if (event.getName().equals(SlashCommand.LEAVE_TIMER_OFF.getCommand())) {
                 leaveTimerOff(event);
+            } else if (event.getName().equals(SlashCommand.MEMBER_LOG_ON.getCommand())) {
+                memberLoggingOn(event);
+            } else if (event.getName().equals(SlashCommand.MEMBER_LOG_OFF.getCommand())) {
+                memberLoggingOff(event);
             }
         }
     }
@@ -66,7 +72,7 @@ public class SlashCommandInteraction extends ListenerAdapter {
 
             textChannel
                     .sendMessage("")
-                    .setEmbeds(createEmbedMessage(event.getOption("title").getAsString().replace("\\n", "\n"), event.getOption("text").getAsString().replace("\\n", "\n")).build())
+                    .setEmbeds(EmbedMessage.createMessageEmbed(event.getOption("title").getAsString().replace("\\n", "\n"), event.getOption("text").getAsString().replace("\\n", "\n")))
                     .queue();
             event.reply("The announcement is published").queue();
         } else {
@@ -88,13 +94,13 @@ public class SlashCommandInteraction extends ListenerAdapter {
 
             event.getGuild().getMembers().forEach(member -> {
                 if (member.getRoles().stream().anyMatch(r -> r.getId().equals(role.getId()))) {
-                    GuildMember guildMember = guildMemberService.findGuildMemberByMemberAndGuild(
+                    GuildMember guildMember = memberService.findGuildMemberByMemberAndGuild(
                             userService.findByIdDiscordUser(member.getUser().getId()).orElseThrow(), guild
                     ).orElseThrow();
 
                     guildMember.setLeaveTimer(true);
 
-                    guildMemberService.saveGuildMember(guildMember);
+                    memberService.saveGuildMember(guildMember);
                 }
             });
 
@@ -139,7 +145,7 @@ public class SlashCommandInteraction extends ListenerAdapter {
             } else {
                 String messageId = textChannel
                         .sendMessage("")
-                        .setEmbeds(createEmbedMessage(title.replace("\\n", "\n"), text.replace("\\n", "\n")).build()).complete().getId();
+                        .setEmbeds(EmbedMessage.createMessageEmbed(title.replace("\\n", "\n"), text.replace("\\n", "\n"))).complete().getId();
                 guild.setMessageId(messageId);
                 guildService.saveGuild(guild);
             }
@@ -170,11 +176,25 @@ public class SlashCommandInteraction extends ListenerAdapter {
         }
     }
 
-    private EmbedBuilder createEmbedMessage(String title, String text) {
-        EmbedBuilder eb = new EmbedBuilder();
-        eb.setTitle(title);
-        eb.setDescription(text);
+    private void memberLoggingOn(SlashCommandInteractionEvent event) {
+        if (event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+            DiscordGuild guild = guildService.findGuildById(event.getGuild().getId()).orElseThrow();
+            guild.setLogMemberChannel(event.getOption("channel").getAsString());
+            guild.setHaveLogMember(true);
+            guildService.saveGuild(guild);
+        } else {
+            event.reply("For this action, you need administrator rights").queue();
+        }
+    }
 
-        return eb;
+    private void memberLoggingOff(SlashCommandInteractionEvent event) {
+        if (event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+            DiscordGuild guild = guildService.findGuildById(event.getGuild().getId()).orElseThrow();
+            guild.setLogMemberChannel(null);
+            guild.setHaveLogMember(false);
+            guildService.saveGuild(guild);
+        } else {
+            event.reply("For this action, you need administrator rights").queue();
+        }
     }
 }
