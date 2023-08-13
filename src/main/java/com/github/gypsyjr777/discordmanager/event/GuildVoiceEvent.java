@@ -1,7 +1,6 @@
 package com.github.gypsyjr777.discordmanager.event;
 
 import com.github.gypsyjr777.discordmanager.entity.DiscordGuild;
-import com.github.gypsyjr777.discordmanager.service.GuildMemberService;
 import com.github.gypsyjr777.discordmanager.service.GuildService;
 import com.github.gypsyjr777.discordmanager.service.UserService;
 import net.dv8tion.jda.api.entities.Guild;
@@ -13,17 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
 @Service
-public class GuildVoiceEvents extends ListenerAdapter {
+public class GuildVoiceEvent extends ListenerAdapter {
 
     private final UserService userService;
     private final GuildService guildService;
 
     @Autowired
-    public GuildVoiceEvents(ApplicationContext context) {
+    public GuildVoiceEvent(ApplicationContext context) {
         this.userService = context.getBean(UserService.class);
         this.guildService = context.getBean(GuildService.class);
     }

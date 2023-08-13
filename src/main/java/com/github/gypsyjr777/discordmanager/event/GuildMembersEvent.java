@@ -5,11 +5,9 @@ import com.github.gypsyjr777.discordmanager.service.*;
 import com.github.gypsyjr777.discordmanager.utils.CheckLeaveTimer;
 import com.github.gypsyjr777.discordmanager.utils.EmbedMessage;
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
@@ -25,12 +23,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Service
 @Slf4j
-public class GuildMembersEvents extends ListenerAdapter {
+public class GuildMembersEvent extends ListenerAdapter {
     private static String TITLE = "User`s information changed";
 
     private final UserService userService;
@@ -40,7 +35,7 @@ public class GuildMembersEvents extends ListenerAdapter {
     private final UserRoleService userRoleService;
 
     @Autowired
-    public GuildMembersEvents(ApplicationContext context) {
+    public GuildMembersEvent(ApplicationContext context) {
         this.userService = context.getBean(UserService.class);
         this.guildService = context.getBean(GuildService.class);
         this.memberService = context.getBean(GuildMemberService.class);
