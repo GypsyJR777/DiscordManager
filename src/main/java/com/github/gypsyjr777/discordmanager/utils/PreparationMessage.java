@@ -9,8 +9,8 @@ public class PreparationMessage {
             oldValue = event.getOldValue() == null ? oldValue : ((GuildUpdateAfkChannelEvent) event).getOldAfkChannel().getName();
             newValue = event.getNewValue() == null ? newValue : ((GuildUpdateAfkChannelEvent) event).getNewAfkChannel().getName();
         } else if (event instanceof GuildUpdateAfkTimeoutEvent) {
-            oldValue = String.valueOf(((GuildUpdateAfkTimeoutEvent) event).getOldAfkTimeout().getSeconds());
-            newValue = String.valueOf(((GuildUpdateAfkTimeoutEvent) event).getNewAfkTimeout().getSeconds());
+            oldValue = String.valueOf(((GuildUpdateAfkTimeoutEvent) event).getOldAfkTimeout().getSeconds() / 60);
+            newValue = String.valueOf(((GuildUpdateAfkTimeoutEvent) event).getNewAfkTimeout().getSeconds() / 60);
         } else if (event instanceof GuildUpdateExplicitContentLevelEvent) {
             oldValue = ((GuildUpdateExplicitContentLevelEvent) event).getOldLevel().getDescription();
             newValue = ((GuildUpdateExplicitContentLevelEvent) event).getNewLevel().getDescription();
