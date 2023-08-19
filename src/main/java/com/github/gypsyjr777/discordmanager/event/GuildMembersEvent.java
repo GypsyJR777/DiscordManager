@@ -16,6 +16,7 @@ import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GenericGuildMemberUpdateEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateAvatarEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent;
+import net.dv8tion.jda.api.events.user.update.UserUpdateAvatarEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.hooks.SubscribeEvent;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -134,6 +135,25 @@ public class GuildMembersEvent extends ListenerAdapter {
                         TITLE,
                         "Delete role",
                         nickname + " deleted a role " + role.getName(),
+                        event.getUser().getAvatarUrl()
+                )).queue();
+            }
+        });
+    }
+
+    @Override
+    public void onUserUpdateAvatar(UserUpdateAvatarEvent event) {
+        JDA jda = event.getJDA();
+        DiscordUser user = userService.findByIdDiscordUser(event.getUser().getId()).orElseThrow();
+        memberService.getGuildsByMember(user).forEach(member -> {
+            DiscordGuild discordGuild = member.getGuild();
+
+            if (discordGuild.isHaveLogMember()) {
+                TextChannel textChannel = jda.getTextChannelById(discordGuild.getLogMemberChannel());
+                textChannel.sendMessage("").setEmbeds(EmbedMessage.createMessageEmbed(
+                        TITLE,
+                        "Avatar was changed",
+                        null,
                         event.getUser().getAvatarUrl()
                 )).queue();
             }
