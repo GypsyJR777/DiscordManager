@@ -3,6 +3,7 @@ package com.github.gypsyjr777.discordmanager.event;
 import com.github.gypsyjr777.discordmanager.entity.DiscordGuild;
 import com.github.gypsyjr777.discordmanager.service.*;
 import com.github.gypsyjr777.discordmanager.utils.EmbedMessage;
+import com.github.gypsyjr777.discordmanager.utils.PreparationMessage;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -32,14 +33,11 @@ public class GuildNewsEvent extends ListenerAdapter {
 
         if (discordGuild.isHaveLogGuild()) {
             JDA jda = event.getJDA();
-            String oldValue = event.getOldValue() == null ? "Empty value" : event.getOldValue().toString();
-            String newValue = event.getNewValue() == null ? "Empty value" : event.getNewValue().toString();
-
             TextChannel textChannel = jda.getTextChannelById(discordGuild.getLogGuildChannel());
             textChannel.sendMessage("").setEmbeds(EmbedMessage.createMessageEmbed(
-                            "Channel log",
+                            TITLE,
                             GuildUpdateEventModel.getMessage(event),
-                            oldValue + " to " + newValue
+                            PreparationMessage.preparationGuildUpdateMessage(event)
                     )
             ).queue();
         }
