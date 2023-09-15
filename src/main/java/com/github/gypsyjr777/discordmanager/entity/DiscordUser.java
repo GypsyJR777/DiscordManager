@@ -6,9 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.dv8tion.jda.api.entities.User;
 
-import java.util.HashSet;
-import java.util.Set;
-
 @Entity
 @Table(name = "discord_user")
 @Getter

@@ -9,27 +9,22 @@ import com.github.gypsyjr777.discordmanager.service.GuildService;
 import com.github.gypsyjr777.discordmanager.service.RoleService;
 import com.github.gypsyjr777.discordmanager.service.UserService;
 import com.github.gypsyjr777.discordmanager.utils.EmbedMessage;
-import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.hooks.SubscribeEvent;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 @Service
-@Slf4j
 public class SlashCommandInteraction extends ListenerAdapter {
     private final GuildService guildService;
     private final GuildMemberService memberService;
     private final UserService userService;
     private final RoleService roleService;
 
-    @Autowired
     public SlashCommandInteraction(ApplicationContext context) {
         this.userService = context.getBean(UserService.class);
         this.guildService = context.getBean(GuildService.class);

@@ -4,9 +4,7 @@ import com.github.gypsyjr777.discordmanager.entity.DiscordGuild;
 import com.github.gypsyjr777.discordmanager.entity.DiscordRole;
 import net.dv8tion.jda.api.entities.Member;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class CheckLeaveTimer {
     public static boolean checkLeaveTimerMember(Member member, List<DiscordRole> roles, DiscordGuild guild) {
