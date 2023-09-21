@@ -47,6 +47,10 @@ public class GuildMembersEvent extends ListenerAdapter {
                 CheckLeaveTimer.checkLeaveTimerMember(member, roleService.getAllRolesByGuild(discordGuild),
                         discordGuild),
                 discordGuild);
+
+        roleService.getAllBasicsRolesByGuild(discordGuild).forEach(role -> {
+            event.getGuild().addRoleToMember(event.getUser(), event.getGuild().getRoleById(role.getId())).queue();
+        });
     }
 
     @Override

@@ -15,6 +15,9 @@ public class GuildMemberService {
     @Autowired
     private GuildMemberRepository guildMemberRepository;
 
+    @Autowired
+    private UserRoleService userRoleService;
+
     public void saveGuildMember(GuildMember guildMember) {
         guildMemberRepository.save(guildMember);
     }
@@ -39,6 +42,10 @@ public class GuildMemberService {
 
     public void deleteGuildMember(GuildMember member) {
         guildMemberRepository.delete(member);
+
+        userRoleService.getAllByUser(member.getMember()).forEach(userRole -> {
+            userRoleService.deleteUserRole(userRole);
+        });
     }
 
     public List<GuildMember> getGuildsByMember(DiscordUser user) {

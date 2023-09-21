@@ -21,7 +21,11 @@ public class DiscordRole {
     @Column(nullable = true)
     private String reaction;
 
-    private boolean vip = false;
+    @Column(nullable = true, columnDefinition = "boolean default false")
+    private boolean vip;
+
+    @Column(nullable = true, columnDefinition = "boolean default false")
+    private boolean basic;
 
     public DiscordRole(Role role, DiscordGuild guild) {
         id = role.getId();

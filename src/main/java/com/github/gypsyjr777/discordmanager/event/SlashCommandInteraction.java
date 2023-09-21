@@ -3,6 +3,7 @@ package com.github.gypsyjr777.discordmanager.event;
 import com.github.gypsyjr777.discordmanager.config.command.SlashCommand;
 import com.github.gypsyjr777.discordmanager.entity.DiscordGuild;
 import com.github.gypsyjr777.discordmanager.entity.DiscordRole;
+import com.github.gypsyjr777.discordmanager.entity.DiscordUser;
 import com.github.gypsyjr777.discordmanager.entity.GuildMember;
 import com.github.gypsyjr777.discordmanager.service.GuildMemberService;
 import com.github.gypsyjr777.discordmanager.service.GuildService;
@@ -44,7 +45,7 @@ public class SlashCommandInteraction extends ListenerAdapter {
                 addReactionRole(event);
             } else if (event.getName().equals(SlashCommand.REACTION_ROLE_TEXT.getCommand())) {
                 addTextReactionRole(event);
-            }  else if (event.getName().equals(SlashCommand.LEAVE_TIMER_ON.getCommand())) {
+            } else if (event.getName().equals(SlashCommand.LEAVE_TIMER_ON.getCommand())) {
                 leaveTimerOn(event);
             } else if (event.getName().equals(SlashCommand.LEAVE_TIMER_OFF.getCommand())) {
                 leaveTimerOff(event);
@@ -56,6 +57,8 @@ public class SlashCommandInteraction extends ListenerAdapter {
                 guildLogOn(event);
             } else if (event.getName().equals(SlashCommand.GUILD_LOG_OFF.getCommand())) {
                 guildLogOff(event);
+            } else if (event.getName().equals(SlashCommand.DEFAULT_ROLE.getCommand())) {
+                setDefaultRole(event);
             }
         }
     }
@@ -226,6 +229,33 @@ public class SlashCommandInteraction extends ListenerAdapter {
             guildService.saveGuild(guild);
 
             event.reply("Guild logging is off").queue();
+        } else {
+            event.reply("For this action, you need administrator rights").queue();
+        }
+    }
+
+    private void setDefaultRole(SlashCommandInteractionEvent event) {
+        if (event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+            DiscordGuild guild = guildService.findGuildById(event.getGuild().getId()).orElseThrow();
+            if (event.getOption("role") != null) {
+                DiscordRole role = roleService.findRoleById(event.getOption("role").getAsRole().getId()).orElse(new DiscordRole(event.getOption("role").getAsRole(), guild));
+
+                guild.setHaveBasicRole(true);
+                role.setBasic(true);
+
+                roleService.saveRole(role);
+            } else {
+                roleService.getAllBasicsRolesByGuild(guild).forEach(role -> {
+                    role.setBasic(false);
+                    roleService.saveRole(role);
+                });
+
+                guild.setHaveBasicRole(false);
+            }
+
+            guildService.saveGuild(guild);
+
+            event.reply("Default role add").queue();
         } else {
             event.reply("For this action, you need administrator rights").queue();
         }

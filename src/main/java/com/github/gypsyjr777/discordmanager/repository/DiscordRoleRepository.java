@@ -13,4 +13,6 @@ public interface DiscordRoleRepository extends JpaRepository<DiscordRole, String
     Optional<DiscordRole> findByReaction(String reaction);
 
     List<DiscordRole> findAllByGuild(DiscordGuild guild);
+
+    List<DiscordRole> findAllByGuildAndBasic(DiscordGuild guild, boolean basic);
 }

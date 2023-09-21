@@ -38,4 +38,7 @@ public class RoleService {
     public List<DiscordRole> getAllRolesByGuild(DiscordGuild guild) {
         return roleRepository.findAllByGuild(guild);
     }
+    public List<DiscordRole> getAllBasicsRolesByGuild(DiscordGuild guild) {
+        return roleRepository.findAllByGuildAndBasic(guild, true);
+    }
 }
