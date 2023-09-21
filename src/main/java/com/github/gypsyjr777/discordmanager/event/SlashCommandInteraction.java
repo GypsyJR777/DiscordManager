@@ -3,33 +3,29 @@ package com.github.gypsyjr777.discordmanager.event;
 import com.github.gypsyjr777.discordmanager.config.command.SlashCommand;
 import com.github.gypsyjr777.discordmanager.entity.DiscordGuild;
 import com.github.gypsyjr777.discordmanager.entity.DiscordRole;
+import com.github.gypsyjr777.discordmanager.entity.DiscordUser;
 import com.github.gypsyjr777.discordmanager.entity.GuildMember;
 import com.github.gypsyjr777.discordmanager.service.GuildMemberService;
 import com.github.gypsyjr777.discordmanager.service.GuildService;
 import com.github.gypsyjr777.discordmanager.service.RoleService;
 import com.github.gypsyjr777.discordmanager.service.UserService;
 import com.github.gypsyjr777.discordmanager.utils.EmbedMessage;
-import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.hooks.SubscribeEvent;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 @Service
-@Slf4j
 public class SlashCommandInteraction extends ListenerAdapter {
     private final GuildService guildService;
     private final GuildMemberService memberService;
     private final UserService userService;
     private final RoleService roleService;
 
-    @Autowired
     public SlashCommandInteraction(ApplicationContext context) {
         this.userService = context.getBean(UserService.class);
         this.guildService = context.getBean(GuildService.class);
@@ -49,7 +45,7 @@ public class SlashCommandInteraction extends ListenerAdapter {
                 addReactionRole(event);
             } else if (event.getName().equals(SlashCommand.REACTION_ROLE_TEXT.getCommand())) {
                 addTextReactionRole(event);
-            }  else if (event.getName().equals(SlashCommand.LEAVE_TIMER_ON.getCommand())) {
+            } else if (event.getName().equals(SlashCommand.LEAVE_TIMER_ON.getCommand())) {
                 leaveTimerOn(event);
             } else if (event.getName().equals(SlashCommand.LEAVE_TIMER_OFF.getCommand())) {
                 leaveTimerOff(event);
@@ -61,6 +57,8 @@ public class SlashCommandInteraction extends ListenerAdapter {
                 guildLogOn(event);
             } else if (event.getName().equals(SlashCommand.GUILD_LOG_OFF.getCommand())) {
                 guildLogOff(event);
+            } else if (event.getName().equals(SlashCommand.DEFAULT_ROLE.getCommand())) {
+                setDefaultRole(event);
             }
         }
     }
@@ -231,6 +229,34 @@ public class SlashCommandInteraction extends ListenerAdapter {
             guildService.saveGuild(guild);
 
             event.reply("Guild logging is off").queue();
+        } else {
+            event.reply("For this action, you need administrator rights").queue();
+        }
+    }
+
+    private void setDefaultRole(SlashCommandInteractionEvent event) {
+        if (event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+            DiscordGuild guild = guildService.findGuildById(event.getGuild().getId()).orElseThrow();
+            if (event.getOption("role") != null) {
+                DiscordRole role = roleService.findRoleById(event.getOption("role").getAsRole().getId()).orElse(new DiscordRole(event.getOption("role").getAsRole(), guild));
+
+                guild.setHaveBasicRole(true);
+                role.setBasic(true);
+
+                roleService.saveRole(role);
+                event.reply("Default role added").queue();
+            } else {
+                roleService.getAllBasicsRolesByGuild(guild).forEach(role -> {
+                    role.setBasic(false);
+                    roleService.saveRole(role);
+                });
+
+                guild.setHaveBasicRole(false);
+                event.reply("Default roles removed").queue();
+            }
+
+            guildService.saveGuild(guild);
+
         } else {
             event.reply("For this action, you need administrator rights").queue();
         }

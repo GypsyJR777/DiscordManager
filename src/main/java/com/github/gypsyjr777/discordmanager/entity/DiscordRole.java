@@ -6,10 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.dv8tion.jda.api.entities.Role;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 @Entity
 @Table(name = "discord_role")
 @Getter
@@ -25,7 +21,11 @@ public class DiscordRole {
     @Column(nullable = true)
     private String reaction;
 
-    private boolean vip = false;
+    @Column(nullable = true, columnDefinition = "boolean default false")
+    private boolean vip;
+
+    @Column(nullable = true, columnDefinition = "boolean default false")
+    private boolean basic;
 
     public DiscordRole(Role role, DiscordGuild guild) {
         id = role.getId();

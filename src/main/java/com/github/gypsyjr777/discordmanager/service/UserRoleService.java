@@ -13,9 +13,9 @@ import java.util.UUID;
 
 @Service
 public class UserRoleService {
+    @Autowired
     private final UserRoleRepository userRoleRepository;
 
-    @Autowired
     public UserRoleService(UserRoleRepository userRoleRepository) {
         this.userRoleRepository = userRoleRepository;
     }

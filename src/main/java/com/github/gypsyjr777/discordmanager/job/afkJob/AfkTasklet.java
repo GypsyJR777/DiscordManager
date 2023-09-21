@@ -1,7 +1,6 @@
 package com.github.gypsyjr777.discordmanager.job.afkJob;
 
 import com.github.gypsyjr777.discordmanager.service.GuildService;
-import com.github.gypsyjr777.discordmanager.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
@@ -11,9 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @Slf4j
 public class AfkTasklet implements Tasklet {
-    @Autowired
-    private UserService userService;
-
     @Autowired
     private GuildService guildService;
 

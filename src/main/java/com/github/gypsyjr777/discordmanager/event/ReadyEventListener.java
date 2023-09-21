@@ -9,7 +9,6 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.hooks.SubscribeEvent;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.EventListener;
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @Slf4j
@@ -29,7 +27,7 @@ public class ReadyEventListener extends ListenerAdapter {
     private final UserService userService;
     private final RoleService roleService;
     private final UserRoleService userRoleService;
-    @Autowired
+
     public ReadyEventListener(ApplicationContext context) {
         this.context = context;
         this.guildService = context.getBean(GuildService.class);

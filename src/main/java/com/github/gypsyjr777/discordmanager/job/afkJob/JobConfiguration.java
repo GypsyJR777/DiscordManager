@@ -10,7 +10,6 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -23,8 +22,6 @@ import java.util.Date;
 @EnableScheduling
 @Slf4j
 public class JobConfiguration {
-    @Autowired
-    private ApplicationContext context;
 
     @Autowired
     private JobLauncher jobLauncher;
