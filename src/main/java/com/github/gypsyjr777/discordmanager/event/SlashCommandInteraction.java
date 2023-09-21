@@ -244,6 +244,7 @@ public class SlashCommandInteraction extends ListenerAdapter {
                 role.setBasic(true);
 
                 roleService.saveRole(role);
+                event.reply("Default role added").queue();
             } else {
                 roleService.getAllBasicsRolesByGuild(guild).forEach(role -> {
                     role.setBasic(false);
@@ -251,11 +252,11 @@ public class SlashCommandInteraction extends ListenerAdapter {
                 });
 
                 guild.setHaveBasicRole(false);
+                event.reply("Default roles removed").queue();
             }
 
             guildService.saveGuild(guild);
 
-            event.reply("Default role add").queue();
         } else {
             event.reply("For this action, you need administrator rights").queue();
         }
