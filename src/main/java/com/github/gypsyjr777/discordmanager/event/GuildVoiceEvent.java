@@ -27,8 +27,12 @@ public class GuildVoiceEvent extends ListenerAdapter {
     public void onGuildVoiceUpdate(GuildVoiceUpdateEvent event) {
         Guild guild = event.getGuild();
         DiscordGuild discordGuild = guildService.findGuildById(guild.getId()).orElseThrow();
-
         Member member = event.getMember();
-        userService.updateDateUser(member.getUser(), discordGuild);
+
+        if (event.getChannelLeft() != null && guild.getAfkChannel().getIdLong() != event.getChannelLeft().asVoiceChannel().getIdLong()) {
+            userService.updateDateUser(member.getUser(), discordGuild, true);
+        } else {
+            userService.updateDateUser(member.getUser(), discordGuild, false);
+        }
     }
 }

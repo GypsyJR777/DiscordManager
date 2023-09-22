@@ -3,7 +3,7 @@ package com.github.gypsyjr777.discordmanager.event;
 import com.github.gypsyjr777.discordmanager.entity.*;
 import com.github.gypsyjr777.discordmanager.service.*;
 import com.github.gypsyjr777.discordmanager.utils.CheckLeaveTimer;
-import com.github.gypsyjr777.discordmanager.utils.EmbedMessage;
+import com.github.gypsyjr777.discordmanager.utils.MessageEmbedCreator;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -79,7 +79,7 @@ public class GuildMembersEvent extends ListenerAdapter {
                     ? event.getUser().getEffectiveName()
                     : ((GuildMemberUpdateNicknameEvent) event).getNewNickname();
 
-            textChannel.sendMessage("").setEmbeds(EmbedMessage.createMessageEmbed(
+            textChannel.sendMessage("").setEmbeds(MessageEmbedCreator.createMessageEmbed(
                     TITLE,
                     "Nickname was changed",
                     oldNickname + " to " + newNickname,
@@ -96,7 +96,7 @@ public class GuildMembersEvent extends ListenerAdapter {
             JDA jda = event.getJDA();
 
             TextChannel textChannel = jda.getTextChannelById(discordGuild.getLogMemberChannel());
-            textChannel.sendMessage("").setEmbeds(EmbedMessage.createMessageEmbed(
+            textChannel.sendMessage("").setEmbeds(MessageEmbedCreator.createMessageEmbed(
                     TITLE,
                     "Avatar was changed",
                     null,
@@ -115,7 +115,7 @@ public class GuildMembersEvent extends ListenerAdapter {
                         : event.getMember().getNickname();
 
                 TextChannel textChannel = jda.getTextChannelById(discordGuild.getLogMemberChannel());
-                textChannel.sendMessage("").setEmbeds(EmbedMessage.createMessageEmbed(
+                textChannel.sendMessage("").setEmbeds(MessageEmbedCreator.createMessageEmbed(
                         TITLE,
                         "Add role",
                         nickname + " got a new role " + role.getName(),
@@ -135,7 +135,7 @@ public class GuildMembersEvent extends ListenerAdapter {
                         : event.getMember().getNickname();
 
                 TextChannel textChannel = jda.getTextChannelById(discordGuild.getLogMemberChannel());
-                textChannel.sendMessage("").setEmbeds(EmbedMessage.createMessageEmbed(
+                textChannel.sendMessage("").setEmbeds(MessageEmbedCreator.createMessageEmbed(
                         TITLE,
                         "Delete role",
                         nickname + " deleted a role " + role.getName(),
@@ -153,7 +153,7 @@ public class GuildMembersEvent extends ListenerAdapter {
 
             if (discordGuild.isHaveLogMember()) {
                 TextChannel textChannel = jda.getTextChannelById(discordGuild.getLogMemberChannel());
-                textChannel.sendMessage("").setEmbeds(EmbedMessage.createMessageEmbed(
+                textChannel.sendMessage("").setEmbeds(MessageEmbedCreator.createMessageEmbed(
                         TITLE,
                         "Avatar was changed",
                         null,

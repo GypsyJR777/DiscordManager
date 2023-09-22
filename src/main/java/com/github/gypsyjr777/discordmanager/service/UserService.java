@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,10 +21,26 @@ public class UserService {
     @Autowired
     private GuildMemberService guildMemberService;
 
-
     public void updateDateUser(User user, DiscordGuild guild) {
         DiscordUser guildUser = findByIdDiscordUser(user.getId()).orElseThrow();
         GuildMember guildMember = guildMemberService.findGuildMemberByMemberAndGuild(guildUser, guild).orElse(new GuildMember(guildUser, guild));
+        guildMember.addXp(1);
+        guildMember.setLastOut(LocalDateTime.now());
+        saveGuildUser(guildUser);
+        guildMemberService.saveGuildMember(guildMember);
+    }
+
+    public void updateDateUser(User user, DiscordGuild guild, boolean isLeft) {
+        DiscordUser guildUser = findByIdDiscordUser(user.getId()).orElseThrow();
+        GuildMember guildMember = guildMemberService.findGuildMemberByMemberAndGuild(guildUser, guild).orElse(new GuildMember(guildUser, guild));
+        if (isLeft) {
+            LocalDateTime in = guildMember.getLastVoiceTime();
+            LocalDateTime out = LocalDateTime.now();
+
+            guildMember.addVoiceTime(ChronoUnit.MINUTES.between(in, out));
+        }
+
+        guildMember.setLastVoiceTime(LocalDateTime.now());
         guildMember.setLastOut(LocalDateTime.now());
         saveGuildUser(guildUser);
         guildMemberService.saveGuildMember(guildMember);
@@ -58,4 +75,5 @@ public class UserService {
     public void deleteGuildUser(String id) {
         guildUserRepository.deleteById(id);
     }
+
 }

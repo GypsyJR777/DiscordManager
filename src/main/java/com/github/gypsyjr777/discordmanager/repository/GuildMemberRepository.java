@@ -17,4 +17,5 @@ public interface GuildMemberRepository extends JpaRepository<GuildMember, Long> 
     void deleteByGuildAndMember(DiscordGuild guild, DiscordUser member);
 
     List<GuildMember> findAllByMember(DiscordUser member);
+    int getLevelByGuildAndMember(DiscordGuild guild, DiscordUser member);
 }

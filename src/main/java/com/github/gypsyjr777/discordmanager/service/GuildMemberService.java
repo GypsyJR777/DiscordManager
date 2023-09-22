@@ -51,4 +51,8 @@ public class GuildMemberService {
     public List<GuildMember> getGuildsByMember(DiscordUser user) {
         return guildMemberRepository.findAllByMember(user);
     }
+
+    public int getLevel(DiscordGuild discordGuild, DiscordUser user) {
+        return guildMemberRepository.getLevelByGuildAndMember(discordGuild, user);
+    }
 }
