@@ -9,13 +9,19 @@ import com.github.gypsyjr777.discordmanager.service.GuildMemberService;
 import com.github.gypsyjr777.discordmanager.service.GuildService;
 import com.github.gypsyjr777.discordmanager.service.RoleService;
 import com.github.gypsyjr777.discordmanager.service.UserService;
-import com.github.gypsyjr777.discordmanager.utils.EmbedMessage;
+import com.github.gypsyjr777.discordmanager.utils.MessageEmbedCreator;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.hooks.SubscribeEvent;
+import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
+import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
@@ -59,6 +65,8 @@ public class SlashCommandInteraction extends ListenerAdapter {
                 guildLogOff(event);
             } else if (event.getName().equals(SlashCommand.DEFAULT_ROLE.getCommand())) {
                 setDefaultRole(event);
+            } else if (event.getName().equals(SlashCommand.LEVEL.getCommand())) {
+                getLevel(event);
             }
         }
     }
@@ -74,7 +82,7 @@ public class SlashCommandInteraction extends ListenerAdapter {
 
             textChannel
                     .sendMessage("")
-                    .setEmbeds(EmbedMessage.createMessageEmbed(event.getOption("title").getAsString().replace("\\n", "\n"), event.getOption("text").getAsString().replace("\\n", "\n")))
+                    .setEmbeds(MessageEmbedCreator.createMessageEmbed(event.getOption("title").getAsString().replace("\\n", "\n"), event.getOption("text").getAsString().replace("\\n", "\n")))
                     .queue();
             event.reply("The announcement is published").queue();
         } else {
@@ -147,7 +155,7 @@ public class SlashCommandInteraction extends ListenerAdapter {
             } else {
                 String messageId = textChannel
                         .sendMessage("")
-                        .setEmbeds(EmbedMessage.createMessageEmbed(title.replace("\\n", "\n"), text.replace("\\n", "\n"))).complete().getId();
+                        .setEmbeds(MessageEmbedCreator.createMessageEmbed(title.replace("\\n", "\n"), text.replace("\\n", "\n"))).complete().getId();
                 guild.setMessageId(messageId);
                 guildService.saveGuild(guild);
             }
@@ -238,7 +246,8 @@ public class SlashCommandInteraction extends ListenerAdapter {
         if (event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
             DiscordGuild guild = guildService.findGuildById(event.getGuild().getId()).orElseThrow();
             if (event.getOption("role") != null) {
-                DiscordRole role = roleService.findRoleById(event.getOption("role").getAsRole().getId()).orElse(new DiscordRole(event.getOption("role").getAsRole(), guild));
+                DiscordRole role = roleService.findRoleById(event.getOption("role").getAsRole().getId())
+                        .orElse(new DiscordRole(event.getOption("role").getAsRole(), guild));
 
                 guild.setHaveBasicRole(true);
                 role.setBasic(true);
@@ -260,5 +269,19 @@ public class SlashCommandInteraction extends ListenerAdapter {
         } else {
             event.reply("For this action, you need administrator rights").queue();
         }
+    }
+
+    private void getLevel(SlashCommandInteractionEvent event) {
+        DiscordGuild guild = guildService.findGuildById(event.getGuild().getId()).orElseThrow();
+        DiscordUser user = userService.findByIdDiscordUser(event.getUser().getId()).orElseThrow();
+        GuildMember guildMember = memberService.findGuildMemberByMemberAndGuild(user, guild).orElseThrow();
+        MessageEmbed messageEmbed = MessageEmbedCreator.createLevelMessage(
+                MessageEmbedCreator.createAuthorInfo(user.getUsername(), null, event.getUser().getEffectiveAvatarUrl(), null),
+                "Level",
+                "Your level is " + guildMember.getLevel() + " lvl",
+                MessageEmbedCreator.createField("Time in voice chat", String.format("%.1f", guildMember.getVoiceTime()) + "h", false)
+        );
+        MessageCreateData message = MessageCreateBuilder.fromEditData(MessageEditData.fromEmbeds(messageEmbed)).build();
+        event.reply(message).queue();
     }
 }

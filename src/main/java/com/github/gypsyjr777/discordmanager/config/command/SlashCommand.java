@@ -67,7 +67,11 @@ public enum SlashCommand {
                 .slash("default_role", "Set default role. To enable it, fill in the \"role\" field. To disable it, leave it empty.")
                 .addOption(OptionType.ROLE, "role", "Role", false)
                 .setGuildOnly(true),
-                "default_role");
+                "default_role"),
+        LEVEL(Commands
+                        .slash("level", "Information about member's level")
+                        .setGuildOnly(true),
+                        "level");
 
         private final SlashCommandData slashCommandData;
         private final String command;
