@@ -5,12 +5,10 @@ import com.github.gypsyjr777.discordmanager.entity.DiscordGuild;
 import com.github.gypsyjr777.discordmanager.entity.DiscordRole;
 import com.github.gypsyjr777.discordmanager.entity.DiscordUser;
 import com.github.gypsyjr777.discordmanager.entity.GuildMember;
-import com.github.gypsyjr777.discordmanager.service.GuildMemberService;
-import com.github.gypsyjr777.discordmanager.service.GuildService;
-import com.github.gypsyjr777.discordmanager.service.RoleService;
-import com.github.gypsyjr777.discordmanager.service.UserService;
+import com.github.gypsyjr777.discordmanager.model.KandinskyBody;
+import com.github.gypsyjr777.discordmanager.service.*;
 import com.github.gypsyjr777.discordmanager.utils.MessageEmbedCreator;
-import net.dv8tion.jda.api.EmbedBuilder;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -18,25 +16,30 @@ import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.hooks.SubscribeEvent;
-import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+
 @Service
+@Slf4j
 public class SlashCommandInteraction extends ListenerAdapter {
     private final GuildService guildService;
     private final GuildMemberService memberService;
     private final UserService userService;
     private final RoleService roleService;
+    private final KandinskyService kandinskyService;
 
     public SlashCommandInteraction(ApplicationContext context) {
         this.userService = context.getBean(UserService.class);
         this.guildService = context.getBean(GuildService.class);
         this.memberService = context.getBean(GuildMemberService.class);
         this.roleService = context.getBean(RoleService.class);
+        this.kandinskyService = context.getBean(KandinskyService.class);
     }
 
     @Override
@@ -67,6 +70,15 @@ public class SlashCommandInteraction extends ListenerAdapter {
                 setDefaultRole(event);
             } else if (event.getName().equals(SlashCommand.LEVEL.getCommand())) {
                 getLevel(event);
+            } else if (event.getName().equals(SlashCommand.GENERATE_IMAGE.getCommand())) {
+                try {
+                    Thread imageThread = new Thread(() -> generateImage(event));
+                    imageThread.start();
+                } catch (Exception exception) {
+                    log.error(exception.getMessage());
+                    TextChannel textChannel = event.getChannel().asTextChannel();
+                    textChannel.sendMessage("Your picture cannot be created. Try changing your request or wait until the next day").queue();
+                }
             }
         }
     }
@@ -283,5 +295,19 @@ public class SlashCommandInteraction extends ListenerAdapter {
         );
         MessageCreateData message = MessageCreateBuilder.fromEditData(MessageEditData.fromEmbeds(messageEmbed)).build();
         event.reply(message).queue();
+    }
+
+    private void generateImage(SlashCommandInteractionEvent event) {
+        event.reply("Wait, your picture is being created").queue();
+        KandinskyBody kandinskyBody = new KandinskyBody(event.getOption("prompt").getAsString());
+        TextChannel textChannel = event.getChannel().asTextChannel();
+        try {
+            textChannel
+                    .sendMessage(MessageCreateData.fromFiles(FileUpload.fromData(kandinskyService.generateImage(kandinskyBody), event.getUser().getEffectiveName() + ".jpg")))
+                    .queue();
+        } catch (IOException e) {
+            log.error(e.toString());
+            textChannel.sendMessage("Your picture cannot be created. Try changing your request or wait until the next day").queue();
+        }
     }
 }

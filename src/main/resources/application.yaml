@@ -1,4 +1,6 @@
 discordToken: ${DISCORD_TOKEN}
+segmindApiToken: ${SEGMIND_TOKEN}
+
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
