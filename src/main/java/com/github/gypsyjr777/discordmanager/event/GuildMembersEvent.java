@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateAvatarEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent;
+import net.dv8tion.jda.api.events.user.GenericUserEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateAvatarEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.hooks.SubscribeEvent;
@@ -145,6 +146,7 @@ public class GuildMembersEvent extends ListenerAdapter {
     }
 
     @Override
+    @SubscribeEvent
     public void onUserUpdateAvatar(UserUpdateAvatarEvent event) {
         JDA jda = event.getJDA();
         DiscordUser user = userService.findByIdDiscordUser(event.getUser().getId()).orElseThrow();
