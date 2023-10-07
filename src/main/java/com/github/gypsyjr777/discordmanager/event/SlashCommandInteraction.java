@@ -1,6 +1,7 @@
 package com.github.gypsyjr777.discordmanager.event;
 
 import com.github.gypsyjr777.discordmanager.config.command.SlashCommand;
+import com.github.gypsyjr777.discordmanager.config.command.SubcommandEnum;
 import com.github.gypsyjr777.discordmanager.entity.DiscordGuild;
 import com.github.gypsyjr777.discordmanager.entity.DiscordRole;
 import com.github.gypsyjr777.discordmanager.entity.DiscordUser;
@@ -50,31 +51,31 @@ public class SlashCommandInteraction extends ListenerAdapter {
     @SubscribeEvent
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
         if (event.isFromGuild()) {
-            if (event.getName().equals(SlashCommand.LEAVE_TIMER.getCommand())) {
+            if (event.getFullCommandName().equals(SubcommandEnum.LEAVE_TIMER.getCommand())) {
                 leaveTimer(event);
-            } else if (event.getName().equals(SlashCommand.ANNOUNCEMENT.getCommand())) {
-                announce(event);
-            } else if (event.getName().equals(SlashCommand.REACTION_ROLE_ADD.getCommand())) {
-                addReactionRole(event);
-            } else if (event.getName().equals(SlashCommand.REACTION_ROLE_TEXT.getCommand())) {
-                addTextReactionRole(event);
-            } else if (event.getName().equals(SlashCommand.LEAVE_TIMER_ON.getCommand())) {
+            } else if (event.getFullCommandName().equals(SubcommandEnum.LEAVE_TIMER_ON.getCommand())) {
                 leaveTimerOn(event);
-            } else if (event.getName().equals(SlashCommand.LEAVE_TIMER_OFF.getCommand())) {
+            } else if (event.getFullCommandName().equals(SubcommandEnum.LEAVE_TIMER_OFF.getCommand())) {
                 leaveTimerOff(event);
-            } else if (event.getName().equals(SlashCommand.MEMBER_LOG_ON.getCommand())) {
+            } else if (event.getFullCommandName().equals(SlashCommand.ANNOUNCEMENT.getCommand())) {
+                announce(event);
+            } else if (event.getFullCommandName().equals(SubcommandEnum.REACTION_ROLE_ADD.getCommand())) {
+                addReactionRole(event);
+            } else if (event.getFullCommandName().equals(SubcommandEnum.REACTION_ROLE_TEXT.getCommand())) {
+                addTextReactionRole(event);
+            } else if (event.getFullCommandName().equals(SubcommandEnum.MEMBER_LOG_ON.getCommand())) {
                 memberLoggingOn(event);
-            } else if (event.getName().equals(SlashCommand.MEMBER_LOG_OFF.getCommand())) {
+            } else if (event.getFullCommandName().equals(SubcommandEnum.MEMBER_LOG_OFF.getCommand())) {
                 memberLoggingOff(event);
-            } else if (event.getName().equals(SlashCommand.GUILD_LOG_ON.getCommand())) {
+            } else if (event.getFullCommandName().equals(SubcommandEnum.GUILD_LOG_ON.getCommand())) {
                 guildLogOn(event);
-            } else if (event.getName().equals(SlashCommand.GUILD_LOG_OFF.getCommand())) {
+            } else if (event.getFullCommandName().equals(SubcommandEnum.GUILD_LOG_OFF.getCommand())) {
                 guildLogOff(event);
-            } else if (event.getName().equals(SlashCommand.DEFAULT_ROLE.getCommand())) {
+            } else if (event.getFullCommandName().equals(SlashCommand.DEFAULT_ROLE.getCommand())) {
                 setDefaultRole(event);
-            } else if (event.getName().equals(SlashCommand.LEVEL.getCommand())) {
+            } else if (event.getFullCommandName().equals(SlashCommand.LEVEL.getCommand())) {
                 getLevel(event);
-            } else if (event.getName().equals(SlashCommand.GENERATE_IMAGE.getCommand())) {
+            } else if (event.getFullCommandName().equals(SlashCommand.GENERATE_IMAGE.getCommand())) {
                 try {
                     Thread imageThread = new Thread(() -> generateImage(event));
                     imageThread.start();
@@ -83,9 +84,9 @@ public class SlashCommandInteraction extends ListenerAdapter {
                     TextChannel textChannel = event.getChannel().asTextChannel();
                     textChannel.sendMessage("Your picture cannot be created. Try changing your request or wait until the next day").queue();
                 }
-            } else if (event.getName().equals(SlashCommand.ABOUT_BOT.getCommand())) {
+            } else if (event.getFullCommandName().equals(SlashCommand.ABOUT_BOT.getCommand())) {
                 aboutBot(event);
-            } else if (event.getName().equals(SlashCommand.HELP.getCommand())) {
+            } else if (event.getFullCommandName().equals(SlashCommand.HELP.getCommand())) {
                 help(event);
             }
         }
