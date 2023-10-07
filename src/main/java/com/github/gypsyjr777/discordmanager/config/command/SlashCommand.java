@@ -1,9 +1,11 @@
 package com.github.gypsyjr777.discordmanager.config.command;
 
 import lombok.Getter;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -76,7 +78,15 @@ public enum SlashCommand {
                 .slash("generate_image", "Kandinsky generate an image")
                 .addOption(OptionType.STRING, "prompt", "Prompt to render", true)
                 .setGuildOnly(true),
-                "generate_image");
+                "generate_image"),
+        ABOUT_BOT(Commands
+                .slash("about_bot", "Information bot")
+                .setGuildOnly(false),
+                "about_bot"),
+        HELP(Commands
+                .slash("help", "Command list")
+                .setGuildOnly(false),
+                "help");
 
         private final SlashCommandData slashCommandData;
         private final String command;
