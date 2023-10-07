@@ -30,6 +30,7 @@ services:
       - DB_URL=jdbc:postgresql://manager-bd:5432/discordbot?useSSL=false
       - DB_USERNAME=${DB_USERNAME}
       - DISCORD_TOKEN=${DISCORD_TOKEN}
+      - SEGMIND_TOKEN=${SEGMIND_TOKEN}
 
 networks:
   manager-net:

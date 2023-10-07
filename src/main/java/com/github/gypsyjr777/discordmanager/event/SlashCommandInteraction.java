@@ -1,6 +1,7 @@
 package com.github.gypsyjr777.discordmanager.event;
 
 import com.github.gypsyjr777.discordmanager.config.command.SlashCommand;
+import com.github.gypsyjr777.discordmanager.config.command.SubcommandEnum;
 import com.github.gypsyjr777.discordmanager.entity.DiscordGuild;
 import com.github.gypsyjr777.discordmanager.entity.DiscordRole;
 import com.github.gypsyjr777.discordmanager.entity.DiscordUser;
@@ -9,6 +10,7 @@ import com.github.gypsyjr777.discordmanager.model.KandinskyBody;
 import com.github.gypsyjr777.discordmanager.service.*;
 import com.github.gypsyjr777.discordmanager.utils.MessageEmbedCreator;
 import lombok.extern.slf4j.Slf4j;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -24,6 +26,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -46,31 +51,31 @@ public class SlashCommandInteraction extends ListenerAdapter {
     @SubscribeEvent
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
         if (event.isFromGuild()) {
-            if (event.getName().equals(SlashCommand.LEAVE_TIMER.getCommand())) {
+            if (event.getFullCommandName().equals(SubcommandEnum.LEAVE_TIMER.getCommand())) {
                 leaveTimer(event);
-            } else if (event.getName().equals(SlashCommand.ANNOUNCEMENT.getCommand())) {
-                announce(event);
-            } else if (event.getName().equals(SlashCommand.REACTION_ROLE_ADD.getCommand())) {
-                addReactionRole(event);
-            } else if (event.getName().equals(SlashCommand.REACTION_ROLE_TEXT.getCommand())) {
-                addTextReactionRole(event);
-            } else if (event.getName().equals(SlashCommand.LEAVE_TIMER_ON.getCommand())) {
+            } else if (event.getFullCommandName().equals(SubcommandEnum.LEAVE_TIMER_ON.getCommand())) {
                 leaveTimerOn(event);
-            } else if (event.getName().equals(SlashCommand.LEAVE_TIMER_OFF.getCommand())) {
+            } else if (event.getFullCommandName().equals(SubcommandEnum.LEAVE_TIMER_OFF.getCommand())) {
                 leaveTimerOff(event);
-            } else if (event.getName().equals(SlashCommand.MEMBER_LOG_ON.getCommand())) {
+            } else if (event.getFullCommandName().equals(SlashCommand.ANNOUNCEMENT.getCommand())) {
+                announce(event);
+            } else if (event.getFullCommandName().equals(SubcommandEnum.REACTION_ROLE_ADD.getCommand())) {
+                addReactionRole(event);
+            } else if (event.getFullCommandName().equals(SubcommandEnum.REACTION_ROLE_TEXT.getCommand())) {
+                addTextReactionRole(event);
+            } else if (event.getFullCommandName().equals(SubcommandEnum.MEMBER_LOG_ON.getCommand())) {
                 memberLoggingOn(event);
-            } else if (event.getName().equals(SlashCommand.MEMBER_LOG_OFF.getCommand())) {
+            } else if (event.getFullCommandName().equals(SubcommandEnum.MEMBER_LOG_OFF.getCommand())) {
                 memberLoggingOff(event);
-            } else if (event.getName().equals(SlashCommand.GUILD_LOG_ON.getCommand())) {
+            } else if (event.getFullCommandName().equals(SubcommandEnum.GUILD_LOG_ON.getCommand())) {
                 guildLogOn(event);
-            } else if (event.getName().equals(SlashCommand.GUILD_LOG_OFF.getCommand())) {
+            } else if (event.getFullCommandName().equals(SubcommandEnum.GUILD_LOG_OFF.getCommand())) {
                 guildLogOff(event);
-            } else if (event.getName().equals(SlashCommand.DEFAULT_ROLE.getCommand())) {
+            } else if (event.getFullCommandName().equals(SlashCommand.DEFAULT_ROLE.getCommand())) {
                 setDefaultRole(event);
-            } else if (event.getName().equals(SlashCommand.LEVEL.getCommand())) {
+            } else if (event.getFullCommandName().equals(SlashCommand.LEVEL.getCommand())) {
                 getLevel(event);
-            } else if (event.getName().equals(SlashCommand.GENERATE_IMAGE.getCommand())) {
+            } else if (event.getFullCommandName().equals(SlashCommand.GENERATE_IMAGE.getCommand())) {
                 try {
                     Thread imageThread = new Thread(() -> generateImage(event));
                     imageThread.start();
@@ -79,6 +84,10 @@ public class SlashCommandInteraction extends ListenerAdapter {
                     TextChannel textChannel = event.getChannel().asTextChannel();
                     textChannel.sendMessage("Your picture cannot be created. Try changing your request or wait until the next day").queue();
                 }
+            } else if (event.getFullCommandName().equals(SlashCommand.ABOUT_BOT.getCommand())) {
+                aboutBot(event);
+            } else if (event.getFullCommandName().equals(SlashCommand.HELP.getCommand())) {
+                help(event);
             }
         }
     }
@@ -287,7 +296,7 @@ public class SlashCommandInteraction extends ListenerAdapter {
         DiscordGuild guild = guildService.findGuildById(event.getGuild().getId()).orElseThrow();
         DiscordUser user = userService.findByIdDiscordUser(event.getUser().getId()).orElseThrow();
         GuildMember guildMember = memberService.findGuildMemberByMemberAndGuild(user, guild).orElseThrow();
-        MessageEmbed messageEmbed = MessageEmbedCreator.createLevelMessage(
+        MessageEmbed messageEmbed = MessageEmbedCreator.createMessage(
                 MessageEmbedCreator.createAuthorInfo(user.getUsername(), null, event.getUser().getEffectiveAvatarUrl(), null),
                 "Level",
                 "Your level is " + guildMember.getLevel() + " lvl",
@@ -309,5 +318,35 @@ public class SlashCommandInteraction extends ListenerAdapter {
             log.error(e.toString());
             textChannel.sendMessage("Your picture cannot be created. Try changing your request or wait until the next day").queue();
         }
+    }
+
+    private void aboutBot(SlashCommandInteractionEvent event) {
+        JDA jda = event.getJDA();
+        MessageEmbed messageEmbed = MessageEmbedCreator.createMessage(
+                MessageEmbedCreator.createAuthorInfo(jda.getUserById("1116872667811823698").getEffectiveName(), null, jda.getUserById("1116872667811823698").getEffectiveAvatarUrl(), null),
+                "About",
+                "Hi! My name is Eva. I am a manager bot in your amazing server.\n" +
+                        "I can help you track user actions and events on the server, expel those who do not participate in the life of the server, " +
+                        "create an arbitrary rating of server participants by assigning them levels.\n" +
+                        "The list of commands is available when you type \"/help\" \n" +
+                        "You can find my code and more information about me here: https://github.com/GypsyJR777/DiscordManager"
+        );
+        MessageCreateData message = MessageCreateBuilder.fromEditData(MessageEditData.fromEmbeds(messageEmbed)).build();
+        event.reply(message).queue();
+    }
+
+    private void help(SlashCommandInteractionEvent event) {
+        List<MessageEmbed.Field> fields = new ArrayList<>();
+        Arrays.stream(SlashCommand.values()).forEach(command -> {
+            fields.add(MessageEmbedCreator.createField("/" + command.getSlashCommandData().getName(), command.getSlashCommandData().getDescription(), false));
+        });
+        MessageEmbed messageEmbed = MessageEmbedCreator.createMessage(
+                "Help commands",
+                "Commands list:",
+                fields
+        );
+
+        MessageCreateData message = MessageCreateBuilder.fromEditData(MessageEditData.fromEmbeds(messageEmbed)).build();
+        event.reply(message).queue();
     }
 }
