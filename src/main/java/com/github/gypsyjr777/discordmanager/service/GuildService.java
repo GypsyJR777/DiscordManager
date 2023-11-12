@@ -44,6 +44,11 @@ public class GuildService {
         JDA jda = context.getBean(JDA.class);
         Guild guild = jda.getGuildById(discordGuild.getId());
         assert guild != null;
+
+        if (guild.getOwner().getId().equals(user.getId())) {
+            log.info("User {} is owner of {}", user.getUsername(), guild.getName());
+        }
+
         log.info("Kick {} from {}", user.getId(), discordGuild.getId());
         guild.kick(Objects.requireNonNull(jda.getUserById(user.getId()))).queue();
         memberService.deleteGuildUser(user, discordGuild);
