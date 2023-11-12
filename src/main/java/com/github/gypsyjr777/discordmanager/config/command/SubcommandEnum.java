@@ -2,7 +2,6 @@ package com.github.gypsyjr777.discordmanager.config.command;
 
 import lombok.Getter;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 
 import java.util.ArrayList;

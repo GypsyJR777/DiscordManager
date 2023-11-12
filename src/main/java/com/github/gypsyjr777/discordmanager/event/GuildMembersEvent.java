@@ -22,6 +22,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.*;
+import java.time.OffsetDateTime;
+import java.util.List;
+
 @Service
 public class GuildMembersEvent extends ListenerAdapter {
     private static String TITLE = "User`s information changed";
@@ -97,11 +101,18 @@ public class GuildMembersEvent extends ListenerAdapter {
             JDA jda = event.getJDA();
 
             TextChannel textChannel = jda.getTextChannelById(discordGuild.getLogMemberChannel());
-            textChannel.sendMessage("").setEmbeds(MessageEmbedCreator.createMessageEmbed(
+            textChannel.sendMessage("").setEmbeds(MessageEmbedCreator.createFullMessageEmbed(
+                    null,
                     TITLE,
                     "Avatar was changed",
+                    OffsetDateTime.now(),
                     null,
-                    event.getUser().getAvatarUrl())).queue();
+                    MessageEmbedCreator.createAuthorInfo(event.getMember().getEffectiveName(), null, event.getUser().getEffectiveAvatarUrl(), null),
+                    null,
+                    event.getNewAvatar().getUrl(),
+                    List.of(),
+                    Color.CYAN
+            )).queue();
         }
     }
 
