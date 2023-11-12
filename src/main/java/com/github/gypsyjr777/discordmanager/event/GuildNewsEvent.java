@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class GuildNewsEvent extends ListenerAdapter {
-    private static String TITLE = "Guild`s information changed";
 
     private final GuildService guildService;
 
