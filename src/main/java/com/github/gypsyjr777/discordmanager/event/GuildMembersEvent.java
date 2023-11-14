@@ -166,11 +166,18 @@ public class GuildMembersEvent extends ListenerAdapter {
 
             if (discordGuild.isHaveLogMember()) {
                 TextChannel textChannel = jda.getTextChannelById(discordGuild.getLogMemberChannel());
-                textChannel.sendMessage("").setEmbeds(MessageEmbedCreator.createMessageEmbed(
+                textChannel.sendMessage("").setEmbeds(MessageEmbedCreator.createFullMessageEmbed(
+                        null,
                         TITLE,
                         "Avatar was changed",
+                        OffsetDateTime.now(),
                         null,
-                        event.getUser().getAvatarUrl())).queue();
+                        MessageEmbedCreator.createAuthorInfo(event.getUser().getEffectiveName(), null, event.getUser().getEffectiveAvatarUrl(), null),
+                        null,
+                        event.getNewAvatar().getUrl(),
+                        List.of(),
+                        Color.CYAN
+                )).queue();
             }
         });
     }
