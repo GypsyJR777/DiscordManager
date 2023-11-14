@@ -1,13 +1,12 @@
 package com.github.gypsyjr777.discordmanager;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import com.github.gypsyjr777.discordmanager.config.DiscordBotConfig;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-@SpringBootApplication
 public class DiscordManagerApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(DiscordManagerApplication.class, args);
+        new AnnotationConfigApplicationContext(DiscordBotConfig.class);
     }
 
 }

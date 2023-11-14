@@ -13,11 +13,7 @@ import java.util.Optional;
 @Service
 public class RoleService {
     @Autowired
-    private final DiscordRoleRepository roleRepository;
-
-    public RoleService(DiscordRoleRepository roleRepository) {
-        this.roleRepository = roleRepository;
-    }
+    private DiscordRoleRepository roleRepository;
 
     public void saveRole(DiscordRole role) {
         roleRepository.save(role);

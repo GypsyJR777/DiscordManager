@@ -3,51 +3,46 @@ package com.github.gypsyjr777.discordmanager.event;
 import com.github.gypsyjr777.discordmanager.config.command.SlashCommand;
 import com.github.gypsyjr777.discordmanager.entity.*;
 import com.github.gypsyjr777.discordmanager.service.*;
-import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.hooks.SubscribeEvent;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-@Slf4j
 public class ReadyEventListener extends ListenerAdapter {
-    private final ApplicationContext context;
-
     private final GuildService guildService;
     private final GuildMemberService guildMemberService;
     private final UserService userService;
     private final RoleService roleService;
     private final UserRoleService userRoleService;
 
+    private Logger log;
+
     public ReadyEventListener(ApplicationContext context) {
-        this.context = context;
         this.guildService = context.getBean(GuildService.class);
         this.guildMemberService = context.getBean(GuildMemberService.class);
         this.userService = context.getBean(UserService.class);
         this.roleService = context.getBean(RoleService.class);
         this.userRoleService = context.getBean(UserRoleService.class);
+        this.log = LogManager.getLogger(ReadyEventListener.class);
     }
 
     @Override
     @SubscribeEvent
     public void onReady(ReadyEvent event) {
         log.info("Bot is ready!");
+        runAfterStartup(event.getJDA());
     }
 
-    // При добавлении этих строк в метод onReady, не сохраняет в бд данные + зависает
-    @EventListener(ApplicationReadyEvent.class)
-    public void runAfterStartup() {
-        JDA jda = context.getBean(JDA.class);
-
+    private void runAfterStartup(JDA jda) {
         jda.getGuilds().forEach(guild -> {
             DiscordGuild discordGuild = guildService.findGuildById(guild.getId()).orElse(new DiscordGuild(guild));
             guildService.saveGuild(discordGuild);
