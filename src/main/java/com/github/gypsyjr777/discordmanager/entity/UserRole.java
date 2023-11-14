@@ -14,6 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class UserRole {
     @Id
+    @Column(name = "id")
     private UUID id;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)

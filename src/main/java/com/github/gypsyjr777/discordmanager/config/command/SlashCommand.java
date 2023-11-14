@@ -48,6 +48,10 @@ public enum SlashCommand {
             .slash("level", "Information about member's level")
             .setGuildOnly(true),
             "level"),
+    LEVEL1(Commands
+            .slash("level1", "Information about member's level")
+            .setGuildOnly(true),
+            "level1"),
     GENERATE_IMAGE(Commands
             .slash("generateimage", "Kandinsky generate an image")
             .addOption(OptionType.STRING, "prompt", "Prompt to render", true)

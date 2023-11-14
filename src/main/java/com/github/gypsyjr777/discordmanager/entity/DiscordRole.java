@@ -13,18 +13,20 @@ import net.dv8tion.jda.api.entities.Role;
 @NoArgsConstructor
 public class DiscordRole {
     @Id
+    @Column(name = "id")
     private String id;
 
     @ManyToOne
+    @JoinColumn(name = "guild_id", nullable = false)
     private DiscordGuild guild;
 
-    @Column(nullable = true)
+    @Column(nullable = true, name = "reaction")
     private String reaction;
 
-    @Column(nullable = true, columnDefinition = "boolean default false")
+    @Column(nullable = true, columnDefinition = "boolean default false", name = "vip")
     private boolean vip;
 
-    @Column(nullable = true, columnDefinition = "boolean default false")
+    @Column(nullable = true, columnDefinition = "boolean default false", name = "basic")
     private boolean basic;
 
     public DiscordRole(Role role, DiscordGuild guild) {

@@ -13,8 +13,10 @@ import net.dv8tion.jda.api.entities.User;
 @NoArgsConstructor
 public class DiscordUser {
     @Id
+    @Column(name = "id")
     private String id;
 
+    @Column(name = "username")
     private String username;
 
     public DiscordUser(User user) {

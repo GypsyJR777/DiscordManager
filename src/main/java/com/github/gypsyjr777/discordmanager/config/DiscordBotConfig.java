@@ -9,13 +9,15 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @Configuration
-@EnableJpaRepositories(basePackages = "com.github.gypsyjr777.discordmanager.repository")
+@ComponentScan("com.github.gypsyjr777.discordmanager")
+@AutoConfiguration
 public class DiscordBotConfig {
     @Autowired
     private ApplicationContext context;
@@ -28,7 +30,7 @@ public class DiscordBotConfig {
 
         return JDABuilder.createDefault(token)
                 .enableIntents(GatewayIntent.MESSAGE_CONTENT) // enables explicit access to message.getContentDisplay()
-                .setActivity(Activity.of(Activity.ActivityType.PLAYING, "Bot`s simple life"))
+                .setActivity(Activity.playing("Bot`s simple life"))
                 .setEventManager(new AnnotatedEventManager())
                 .addEventListeners(new ReadyEventListener(context))
                 .addEventListeners(new GuildVoiceEvent(context))

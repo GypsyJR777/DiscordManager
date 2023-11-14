@@ -1,8 +1,12 @@
 package com.github.gypsyjr777.discordmanager;
 
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 class DiscordManagerApplicationTests {
-
+    @Test
+    void exampleTest() {
+        Assertions.assertTrue(true);
+    }
 }

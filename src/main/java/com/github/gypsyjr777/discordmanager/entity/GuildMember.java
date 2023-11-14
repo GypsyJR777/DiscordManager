@@ -17,6 +17,7 @@ import java.util.UUID;
 public class GuildMember {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id")
     private UUID id;
 
     @NotNull
@@ -29,21 +30,23 @@ public class GuildMember {
     @JoinColumn(name = "guild_id")
     private DiscordGuild guild;
 
+    @Column(name = "last_out")
     private LocalDateTime lastOut;
 
-    @Column(nullable = true)
+    @Column(nullable = true, name = "is_leave_timer")
     private boolean isLeaveTimer;
 
-    @Column(nullable = false, columnDefinition = "int default 1")
+    @Column(nullable = false, columnDefinition = "int default 1", name = "level")
     private int level;
 
 
-    @Column(nullable = false, columnDefinition = "bigint default 0")
+    @Column(nullable = false, columnDefinition = "bigint default 0", name = "xp")
     private long xp;
 
-    @Column(nullable = true, columnDefinition = "double precision default 0")
+    @Column(nullable = true, columnDefinition = "double precision default 0", name = "voice_time")
     private double voiceTime = 0.0;
 
+    @Column(name = "last_voice_time")
     private LocalDateTime lastVoiceTime;
 
     public GuildMember(DiscordUser member, DiscordGuild guild) {

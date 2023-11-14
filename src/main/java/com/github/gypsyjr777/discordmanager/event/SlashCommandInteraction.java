@@ -9,7 +9,6 @@ import com.github.gypsyjr777.discordmanager.entity.GuildMember;
 import com.github.gypsyjr777.discordmanager.model.KandinskyBody;
 import com.github.gypsyjr777.discordmanager.service.*;
 import com.github.gypsyjr777.discordmanager.utils.MessageEmbedCreator;
-import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -22,6 +21,8 @@ import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +32,6 @@ import java.util.Arrays;
 import java.util.List;
 
 @Service
-@Slf4j
 public class SlashCommandInteraction extends ListenerAdapter {
     private final GuildService guildService;
     private final GuildMemberService memberService;
@@ -39,12 +39,15 @@ public class SlashCommandInteraction extends ListenerAdapter {
     private final RoleService roleService;
     private final KandinskyService kandinskyService;
 
+    private Logger log;
+
     public SlashCommandInteraction(ApplicationContext context) {
         this.userService = context.getBean(UserService.class);
         this.guildService = context.getBean(GuildService.class);
         this.memberService = context.getBean(GuildMemberService.class);
         this.roleService = context.getBean(RoleService.class);
         this.kandinskyService = context.getBean(KandinskyService.class);
+        this.log = LogManager.getLogger(SlashCommandInteraction.class);
     }
 
     @Override
@@ -74,6 +77,8 @@ public class SlashCommandInteraction extends ListenerAdapter {
             } else if (event.getFullCommandName().equals(SlashCommand.DEFAULT_ROLE.getCommand())) {
                 setDefaultRole(event);
             } else if (event.getFullCommandName().equals(SlashCommand.LEVEL.getCommand())) {
+                getLevel(event);
+            } else if (event.getFullCommandName().equals(SlashCommand.LEVEL1.getCommand())) {
                 getLevel(event);
             } else if (event.getFullCommandName().equals(SlashCommand.GENERATE_IMAGE.getCommand())) {
                 try {

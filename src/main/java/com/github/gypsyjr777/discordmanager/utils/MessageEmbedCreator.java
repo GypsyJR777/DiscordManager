@@ -1,6 +1,5 @@
 package com.github.gypsyjr777.discordmanager.utils;
 
-import jakarta.annotation.Nullable;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
@@ -30,7 +29,7 @@ public class MessageEmbedCreator {
 
     public static MessageEmbed createFullMessageEmbed(
             String url, String title, String description, OffsetDateTime timestamp, String thumbnailUrl,
-            @Nullable MessageEmbed.AuthorInfo author, @Nullable MessageEmbed.Footer footer, String imageUrl,
+            MessageEmbed.AuthorInfo author, MessageEmbed.Footer footer, String imageUrl,
             List<MessageEmbed.Field> fields, Color color
     ) {
         EmbedBuilder embedBuilder = new EmbedBuilder();

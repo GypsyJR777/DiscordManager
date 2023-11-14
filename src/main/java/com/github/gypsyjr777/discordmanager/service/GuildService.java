@@ -4,21 +4,22 @@ import com.github.gypsyjr777.discordmanager.entity.DiscordGuild;
 import com.github.gypsyjr777.discordmanager.entity.DiscordUser;
 import com.github.gypsyjr777.discordmanager.entity.GuildMember;
 import com.github.gypsyjr777.discordmanager.repository.DiscordGuildRepository;
-import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Service
-@Slf4j
 public class GuildService {
     @Autowired
     private ApplicationContext context;
@@ -28,6 +29,8 @@ public class GuildService {
     private RoleService roleService;
     @Autowired
     private DiscordGuildRepository guildRepository;
+
+    private Logger log = LogManager.getLogger(GuildService.class);
 
     public void findAndKickAfk(DiscordGuild guild) {
         Set<GuildMember> guildMembers = new HashSet<>(memberService.getAllGuildMembers(guild));
