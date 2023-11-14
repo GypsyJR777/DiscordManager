@@ -1,4 +1,15 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+    }
+    dependencies {
+        classpath "gradle.plugin.com.github.johnrengelman:shadow:7.1.2"
+    }
+}
+
 plugins {
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
     id 'java'
     id 'io.spring.dependency-management' version '1.1.0'
     id 'org.liquibase.gradle' version '2.2.0'
@@ -38,8 +49,21 @@ dependencies {
 
 jar {
     manifest {
-        attributes(
-                'Main-Class': 'com.github.gypsyjr777.discordmanager.DiscordManagerApplication'
-        )
+        attributes "Main-Class": "com.github.gypsyjr777.discordmanager.DiscordManagerApplication"
     }
+
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+task customFatJar(type: Jar) {
+    manifest {
+        attributes 'Main-Class': 'com.github.gypsyjr777.discordmanager.DiscordManagerApplication'
+    }
+    archiveBaseName = 'all-in-one-jar'
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
 }
