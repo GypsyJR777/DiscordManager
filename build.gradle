@@ -35,3 +35,11 @@ dependencies {
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.1'
 }
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'com.github.gypsyjr777.discordmanager.DiscordManagerApplication'
+        )
+    }
+}
