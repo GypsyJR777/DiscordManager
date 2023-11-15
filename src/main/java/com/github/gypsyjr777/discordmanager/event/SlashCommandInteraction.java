@@ -78,8 +78,6 @@ public class SlashCommandInteraction extends ListenerAdapter {
                 setDefaultRole(event);
             } else if (event.getFullCommandName().equals(SlashCommand.LEVEL.getCommand())) {
                 getLevel(event);
-            } else if (event.getFullCommandName().equals(SlashCommand.LEVEL1.getCommand())) {
-                getLevel(event);
             } else if (event.getFullCommandName().equals(SlashCommand.GENERATE_IMAGE.getCommand())) {
                 try {
                     Thread imageThread = new Thread(() -> generateImage(event));
