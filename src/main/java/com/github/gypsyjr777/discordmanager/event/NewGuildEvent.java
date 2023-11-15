@@ -11,6 +11,8 @@ import net.dv8tion.jda.api.events.role.RoleCreateEvent;
 import net.dv8tion.jda.api.events.role.RoleDeleteEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.hooks.SubscribeEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +27,7 @@ public class NewGuildEvent extends ListenerAdapter {
     private final GuildMemberService memberService;
     private final RoleService roleService;
     private final UserRoleService userRoleService;
+    private final Logger log;
 
     public NewGuildEvent(ApplicationContext context) {
         this.userService = context.getBean(UserService.class);
@@ -32,6 +35,7 @@ public class NewGuildEvent extends ListenerAdapter {
         this.memberService = context.getBean(GuildMemberService.class);
         this.roleService = context.getBean(RoleService.class);
         this.userRoleService = context.getBean(UserRoleService.class);
+        this.log = LogManager.getLogger(NewGuildEvent.class);
     }
 
     //TODO убрать дубляж
@@ -41,6 +45,7 @@ public class NewGuildEvent extends ListenerAdapter {
     public void onGuildJoin(GuildJoinEvent event) {
         Guild guild = event.getGuild();
         DiscordGuild discordGuild = guildService.findGuildById(guild.getId()).orElse(new DiscordGuild(guild));
+        log.info("New guild {} added bot", guild.getName());
         guildService.saveGuild(discordGuild);
         guild.getMembers().forEach(member -> {
             DiscordUser user = userService.findByIdDiscordUser(member.getUser().getId()).orElse(new DiscordUser(member.getUser()));
@@ -67,6 +72,7 @@ public class NewGuildEvent extends ListenerAdapter {
     @SubscribeEvent
     public void onGuildLeave(GuildLeaveEvent event) {
         Guild guild = event.getGuild();
+        log.info("Guild {} removed bot", guild.getName());
         DiscordGuild discordGuild = guildService.findGuildById(guild.getId()).orElseThrow();
         guildService.deleteGuild(discordGuild);
     }

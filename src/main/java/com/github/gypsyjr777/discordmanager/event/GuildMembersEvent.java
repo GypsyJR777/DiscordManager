@@ -18,6 +18,8 @@ import net.dv8tion.jda.api.events.user.GenericUserEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateAvatarEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.hooks.SubscribeEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,12 +36,15 @@ public class GuildMembersEvent extends ListenerAdapter {
     private final GuildService guildService;
     private final GuildMemberService memberService;
     private final RoleService roleService;
+    private final Logger log;
 
     public GuildMembersEvent(ApplicationContext context) {
         this.userService = context.getBean(UserService.class);
         this.guildService = context.getBean(GuildService.class);
         this.memberService = context.getBean(GuildMemberService.class);
         this.roleService = context.getBean(RoleService.class);
+
+        this.log = LogManager.getLogger(GuildMembersEvent.class);
     }
 
     @Override
@@ -48,6 +53,9 @@ public class GuildMembersEvent extends ListenerAdapter {
         Guild guild = event.getGuild();
         DiscordGuild discordGuild = guildService.findGuildById(guild.getId()).orElseThrow();
         Member member = event.getMember();
+
+        log.info("New member {} in guild {}", member.getUser().getEffectiveName(), guild.getName());
+
         userService.createNewUser(member.getUser(),
                 CheckLeaveTimer.checkLeaveTimerMember(member, roleService.getAllRolesByGuild(discordGuild),
                         discordGuild),
@@ -66,6 +74,7 @@ public class GuildMembersEvent extends ListenerAdapter {
         DiscordGuild discordGuild = guildService.findGuildById(guild.getId()).orElseThrow();
         DiscordUser user = userService.findByIdDiscordUser(event.getMember().getUser().getId()).orElseThrow();
         GuildMember member = memberService.findGuildMemberByMemberAndGuild(user, discordGuild).orElseThrow();
+        log.info("Remove member {} in guild {}", user.getUsername(), guild.getName());
 
         memberService.deleteGuildMember(member);
     }
