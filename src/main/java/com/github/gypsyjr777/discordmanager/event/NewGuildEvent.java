@@ -48,7 +48,7 @@ public class NewGuildEvent extends ListenerAdapter {
     @Transactional
     public void onGuildJoin(GuildJoinEvent event) {
         Guild guild = event.getGuild();
-        DiscordGuild discordGuild = guildService.findGuildById(guild.getId()).orElse(new DiscordGuild(guild));
+        DiscordGuild discordGuild = guildService.findGuildById(guild.getId()).orElseGet(() -> new DiscordGuild(guild));
         log.info("New guild {} added bot", guild.getName());
         guildService.saveGuild(discordGuild);
         utils.addMembersFromGuild(guild, discordGuild);
@@ -70,7 +70,7 @@ public class NewGuildEvent extends ListenerAdapter {
     @SubscribeEvent
     public void onRoleCreate(RoleCreateEvent event) {
         DiscordGuild discordGuild = guildService.findGuildById(event.getGuild().getId())
-                .orElse(utils.createDiscordGuild(event.getGuild()));
+                .orElseGet(() -> utils.createDiscordGuild(event.getGuild()));
 
         DiscordRole discordRole = new DiscordRole(event.getRole(), discordGuild);
         roleService.saveRole(discordRole);
@@ -95,7 +95,7 @@ public class NewGuildEvent extends ListenerAdapter {
     public void onGuildMemberRoleAdd(GuildMemberRoleAddEvent event) {
         event.getRoles().forEach(role -> {
             DiscordGuild discordGuild = guildService.findGuildById(event.getGuild().getId())
-                    .orElse(utils.createDiscordGuild(event.getGuild()));
+                    .orElseGet(() -> utils.createDiscordGuild(event.getGuild()));
 
             DiscordRole discordRole = roleService.findRoleById(role.getId())
                     .orElseGet(() -> {
@@ -104,13 +104,13 @@ public class NewGuildEvent extends ListenerAdapter {
                         return newRole;
                     });
             DiscordUser discordUser = userService.findByIdDiscordUser(event.getUser().getId())
-                    .orElse(utils.createDiscordUser(event.getUser()));
+                    .orElseGet(() -> utils.createDiscordUser(event.getUser()));
 
             UserRole userRole = new UserRole(discordRole, discordUser);
 
             if (discordRole.isVip()) {
                 GuildMember guildMember = memberService.findGuildMemberByMemberAndGuild(discordUser, discordGuild)
-                        .orElse(utils.createGuildMember(discordUser, discordGuild));
+                        .orElseGet(() -> utils.createGuildMember(discordUser, discordGuild));
 
                 guildMember.setLeaveTimer(true);
                 memberService.saveGuildMember(guildMember);

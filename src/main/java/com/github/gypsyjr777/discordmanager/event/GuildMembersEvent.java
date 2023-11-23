@@ -58,7 +58,7 @@ public class GuildMembersEvent extends ListenerAdapter {
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {
         Guild guild = event.getGuild();
 
-        DiscordGuild discordGuild = guildService.findGuildById(guild.getId()).orElse(utils.createDiscordGuild(guild));
+        DiscordGuild discordGuild = guildService.findGuildById(guild.getId()).orElseGet(() -> utils.createDiscordGuild(guild));
 
         Member member = event.getMember();
 
@@ -84,7 +84,7 @@ public class GuildMembersEvent extends ListenerAdapter {
     @Transactional
     public void onGuildMemberRemove(GuildMemberRemoveEvent event) {
         Guild guild = event.getGuild();
-        DiscordGuild discordGuild = guildService.findGuildById(guild.getId()).orElse(utils.createDiscordGuild(guild));
+        DiscordGuild discordGuild = guildService.findGuildById(guild.getId()).orElseGet(() -> utils.createDiscordGuild(guild));
         DiscordUser user = userService.findByIdDiscordUser(event.getMember().getUser().getId())
                 .orElseThrow(() -> new NullUserException(event.getUser().getId()));
 
@@ -100,7 +100,7 @@ public class GuildMembersEvent extends ListenerAdapter {
     @Override
     public void onGuildMemberUpdateNickname(GuildMemberUpdateNicknameEvent event) {
         DiscordGuild discordGuild = guildService.findGuildById(event.getGuild().getId())
-                .orElse(utils.createDiscordGuild(event.getGuild()));
+                .orElseGet(() -> utils.createDiscordGuild(event.getGuild()));
 
         if (discordGuild.isHaveLogMember()) {
             JDA jda = event.getJDA();
@@ -127,7 +127,7 @@ public class GuildMembersEvent extends ListenerAdapter {
     @Override
     public void onGuildMemberUpdateAvatar(GuildMemberUpdateAvatarEvent event) {
         DiscordGuild discordGuild = guildService.findGuildById(event.getGuild().getId())
-                .orElse(utils.createDiscordGuild(event.getGuild()));
+                .orElseGet(() -> utils.createDiscordGuild(event.getGuild()));
 
         if (discordGuild.isHaveLogMember()) {
             JDA jda = event.getJDA();
@@ -156,7 +156,7 @@ public class GuildMembersEvent extends ListenerAdapter {
         JDA jda = event.getJDA();
         event.getRoles().forEach(role -> {
             DiscordGuild discordGuild = guildService.findGuildById(event.getGuild().getId())
-                    .orElse(utils.createDiscordGuild(event.getGuild()));
+                    .orElseGet(() -> utils.createDiscordGuild(event.getGuild()));
 
             if (discordGuild.isHaveLogMember()) {
                 String nickname = event.getMember().getNickname() == null ? event.getUser().getEffectiveName()
@@ -180,7 +180,7 @@ public class GuildMembersEvent extends ListenerAdapter {
         JDA jda = event.getJDA();
         event.getRoles().forEach(role -> {
             DiscordGuild discordGuild = guildService.findGuildById(event.getGuild().getId())
-                    .orElse(utils.createDiscordGuild(event.getGuild()));
+                    .orElseGet(() -> utils.createDiscordGuild(event.getGuild()));
 
             if (discordGuild.isHaveLogMember()) {
                 String nickname = event.getMember().getNickname() == null ? event.getUser().getEffectiveName()

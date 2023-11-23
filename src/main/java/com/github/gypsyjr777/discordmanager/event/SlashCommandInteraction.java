@@ -121,7 +121,7 @@ public class SlashCommandInteraction extends ListenerAdapter {
     private void leaveTimer(SlashCommandInteractionEvent event) {
         if (event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
             DiscordGuild guild = guildService.findGuildById(event.getGuild().getId())
-                    .orElse(utils.createDiscordGuild(event.getGuild()));
+                    .orElseGet(() -> utils.createDiscordGuild(event.getGuild()));
 
             guild.setHaveLeaveTimer(true);
 
@@ -135,12 +135,12 @@ public class SlashCommandInteraction extends ListenerAdapter {
             event.getGuild().getMembers().forEach(member -> {
                 if (member.getRoles().stream().anyMatch(r -> r.getId().equals(role.getId()))) {
                     DiscordUser discordUser = userService.findByIdDiscordUser(member.getUser().getId())
-                            .orElse(utils.createDiscordUser(member.getUser()));
+                            .orElseGet(() -> utils.createDiscordUser(member.getUser()));
 
                     GuildMember guildMember = memberService.findGuildMemberByMemberAndGuild(
                             discordUser,
                             guild
-                    ).orElse(utils.createGuildMember(discordUser, guild));
+                    ).orElseGet(() -> utils.createGuildMember(discordUser, guild));
 
                     guildMember.setLeaveTimer(true);
 
@@ -157,9 +157,9 @@ public class SlashCommandInteraction extends ListenerAdapter {
     private void addReactionRole(SlashCommandInteractionEvent event) {
         if (event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
             DiscordGuild guild = guildService.findGuildById(event.getGuild().getId())
-                    .orElse(utils.createDiscordGuild(event.getGuild()));
+                    .orElseGet(() -> utils.createDiscordGuild(event.getGuild()));
 
-            DiscordRole role = roleService.findRoleById(event.getOption("role").getAsRole().getId()).orElse(new DiscordRole(event.getOption("role").getAsRole(), guild));
+            DiscordRole role = roleService.findRoleById(event.getOption("role").getAsRole().getId()).orElseGet(() -> new DiscordRole(event.getOption("role").getAsRole(), guild));
             String reaction = event.getOption("reaction").getAsString();
             String messageId = event.getOption("message_id").getAsString();
 
@@ -181,7 +181,7 @@ public class SlashCommandInteraction extends ListenerAdapter {
     private void addTextReactionRole(SlashCommandInteractionEvent event) {
         if (event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
             DiscordGuild guild = guildService.findGuildById(event.getGuild().getId())
-                    .orElse(utils.createDiscordGuild(event.getGuild()));
+                    .orElseGet(() -> utils.createDiscordGuild(event.getGuild()));
 
             String text = event.getOption("text").getAsString();
             TextChannel textChannel = event.getChannel().asTextChannel();
@@ -206,7 +206,7 @@ public class SlashCommandInteraction extends ListenerAdapter {
     private void leaveTimerOff(SlashCommandInteractionEvent event) {
         if (event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
             DiscordGuild guild = guildService.findGuildById(event.getGuild().getId())
-                    .orElse(utils.createDiscordGuild(event.getGuild()));
+                    .orElseGet(() -> utils.createDiscordGuild(event.getGuild()));
 
             guild.setHaveLeaveTimer(false);
             guildService.saveGuild(guild);
@@ -220,7 +220,7 @@ public class SlashCommandInteraction extends ListenerAdapter {
     private void leaveTimerOn(SlashCommandInteractionEvent event) {
         if (event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
             DiscordGuild guild = guildService.findGuildById(event.getGuild().getId())
-                    .orElse(utils.createDiscordGuild(event.getGuild()));
+                    .orElseGet(() -> utils.createDiscordGuild(event.getGuild()));
 
             guild.setHaveLeaveTimer(true);
             guildService.saveGuild(guild);
@@ -234,7 +234,7 @@ public class SlashCommandInteraction extends ListenerAdapter {
     private void memberLoggingOn(SlashCommandInteractionEvent event) {
         if (event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
             DiscordGuild guild = guildService.findGuildById(event.getGuild().getId())
-                    .orElse(utils.createDiscordGuild(event.getGuild()));
+                    .orElseGet(() -> utils.createDiscordGuild(event.getGuild()));
 
             guild.setLogMemberChannel(event.getOption("channel").getAsString());
             guild.setHaveLogMember(true);
@@ -249,7 +249,7 @@ public class SlashCommandInteraction extends ListenerAdapter {
     private void memberLoggingOff(SlashCommandInteractionEvent event) {
         if (event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
             DiscordGuild guild = guildService.findGuildById(event.getGuild().getId())
-                    .orElse(utils.createDiscordGuild(event.getGuild()));
+                    .orElseGet(() -> utils.createDiscordGuild(event.getGuild()));
 
             guild.setLogMemberChannel(null);
             guild.setHaveLogMember(false);
@@ -264,7 +264,7 @@ public class SlashCommandInteraction extends ListenerAdapter {
     private void guildLogOn(SlashCommandInteractionEvent event) {
         if (event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
             DiscordGuild guild = guildService.findGuildById(event.getGuild().getId())
-                    .orElse(utils.createDiscordGuild(event.getGuild()));
+                    .orElseGet(() -> utils.createDiscordGuild(event.getGuild()));
 
             guild.setLogGuildChannel(event.getOption("channel").getAsString());
             guild.setHaveLogGuild(true);
@@ -279,7 +279,7 @@ public class SlashCommandInteraction extends ListenerAdapter {
     private void guildLogOff(SlashCommandInteractionEvent event) {
         if (event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
             DiscordGuild guild = guildService.findGuildById(event.getGuild().getId())
-                    .orElse(utils.createDiscordGuild(event.getGuild()));
+                    .orElseGet(() -> utils.createDiscordGuild(event.getGuild()));
 
             guild.setLogGuildChannel(null);
             guild.setHaveLogGuild(false);
@@ -294,11 +294,11 @@ public class SlashCommandInteraction extends ListenerAdapter {
     private void setDefaultRole(SlashCommandInteractionEvent event) {
         if (event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
             DiscordGuild guild = guildService.findGuildById(event.getGuild().getId())
-                    .orElse(utils.createDiscordGuild(event.getGuild()));
+                    .orElseGet(() -> utils.createDiscordGuild(event.getGuild()));
 
             if (event.getOption("role") != null) {
                 DiscordRole role = roleService.findRoleById(event.getOption("role").getAsRole().getId())
-                        .orElse(new DiscordRole(event.getOption("role").getAsRole(), guild));
+                        .orElseGet(() -> new DiscordRole(event.getOption("role").getAsRole(), guild));
 
                 guild.setHaveBasicRole(true);
                 role.setBasic(true);
@@ -324,13 +324,13 @@ public class SlashCommandInteraction extends ListenerAdapter {
 
     private void getLevel(SlashCommandInteractionEvent event) {
         DiscordGuild guild = guildService.findGuildById(event.getGuild().getId())
-                .orElse(utils.createDiscordGuild(event.getGuild()));
+                .orElseGet(() -> utils.createDiscordGuild(event.getGuild()));
 
         DiscordUser user = userService.findByIdDiscordUser(event.getUser().getId())
-                .orElse(utils.createDiscordUser(event.getMember().getUser()));
+                .orElseGet(() -> utils.createDiscordUser(event.getMember().getUser()));
 
         GuildMember guildMember = memberService.findGuildMemberByMemberAndGuild(user, guild)
-                .orElse(utils.createGuildMember(user, guild));
+                .orElseGet(() -> utils.createGuildMember(user, guild));
 
         MessageEmbed messageEmbed = MessageEmbedCreator.createMessage(
                 MessageEmbedCreator.createAuthorInfo(user.getUsername(), null, event.getUser().getEffectiveAvatarUrl(), null),

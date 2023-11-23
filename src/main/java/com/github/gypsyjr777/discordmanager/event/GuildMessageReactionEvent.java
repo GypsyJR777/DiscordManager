@@ -30,7 +30,7 @@ public class GuildMessageReactionEvent extends ListenerAdapter {
     @SubscribeEvent
     public void onMessageReactionAdd(MessageReactionAddEvent event) {
         DiscordGuild guild = guildService.findGuildById(event.getGuild().getId())
-                .orElse(utils.createDiscordGuild(event.getGuild()));
+                .orElseGet(() -> utils.createDiscordGuild(event.getGuild()));
 
         if (guild.getMessageId() != null && !guild.getMessageId().isBlank() && guild.getMessageId().equals(event.getMessageId())) {
             DiscordRole discordRole = roleService.findRoleByReaction(event.getReaction().getEmoji().getFormatted())
