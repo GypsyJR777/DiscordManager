@@ -32,7 +32,7 @@ public class JpaConfig {
     private String dbPassword;
     @Value("${datasource.dialect}")
     private String dbDialect;
-    @Value("${liquibase.change-log}")
+    @Value("${liquibase.change-log:}")
     private String liquibaseChangeLog;
 
     @Bean
@@ -59,7 +59,6 @@ public class JpaConfig {
     Properties hibernateProperties() {
         Properties properties = new Properties();
         properties.setProperty("hibernate.dialect", dbDialect);
-//        properties.setProperty("hibernate.show_sql", env.getProperty("hibernate.showsql"));
         return properties;
     }
 
@@ -72,9 +71,11 @@ public class JpaConfig {
 
     @Bean
     public SpringLiquibase liquibase() {
-        SpringLiquibase liquibase = new SpringLiquibase();
-        liquibase.setChangeLog(liquibaseChangeLog);
-        liquibase.setDataSource(dataSource());
-        return liquibase;
+        if (!liquibaseChangeLog.isBlank()) {
+            SpringLiquibase liquibase = new SpringLiquibase();
+            liquibase.setChangeLog(liquibaseChangeLog);
+            liquibase.setDataSource(dataSource());
+            return liquibase;
+        } else return null;
     }
 }

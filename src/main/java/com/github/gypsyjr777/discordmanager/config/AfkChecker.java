@@ -14,15 +14,16 @@ public class AfkChecker {
     @Autowired
     private GuildService guildService;
 
-    private Logger log = LogManager.getLogger(AfkChecker.class);
+    private final Logger log = LogManager.getLogger(AfkChecker.class);
 
     @Scheduled(fixedRate = 30000000)
     public void schedule() {
-        log.info("ALL IS GOOD!!!");
+        log.info("Afk checker started");
 
         guildService.findAllGuildsWithLeaveTimers().forEach(guild -> {
             if (guild.isHaveLeaveTimer())
                 guildService.findAndKickAfk(guild);
         });
+        log.info("Afk checker ended");
     }
 }

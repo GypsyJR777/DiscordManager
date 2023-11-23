@@ -48,11 +48,11 @@ public class GuildService {
         Guild guild = jda.getGuildById(discordGuild.getId());
         assert guild != null;
 
-        if (guild.getOwner().getId().equals(user.getId())) {
+        if (guild.getOwner().getUser().getId().equals(user.getId())) {
             log.info("User {} is owner of {}", user.getUsername(), guild.getName());
         }
 
-        log.info("Kick {} from {}", user.getId(), discordGuild.getId());
+        log.info("Kick {} from {}", user.getUsername(), guild.getName());
         guild.kick(Objects.requireNonNull(jda.getUserById(user.getId()))).queue();
         memberService.deleteGuildUser(user, discordGuild);
     }
