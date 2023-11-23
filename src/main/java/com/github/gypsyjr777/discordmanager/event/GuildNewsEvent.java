@@ -34,7 +34,7 @@ public class GuildNewsEvent extends ListenerAdapter {
         log.info("Guild {} setting/information was updated", event.getGuild().getName());
 
         DiscordGuild discordGuild = guildService.findGuildById(event.getGuild().getId())
-                .orElse(utils.createDiscordGuild(event.getGuild()));
+                .orElseGet(() -> utils.createDiscordGuild(event.getGuild()));
 
         if (discordGuild.isHaveLogGuild()) {
             JDA jda = event.getJDA();

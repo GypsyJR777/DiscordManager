@@ -39,8 +39,8 @@ public class BasicUtils {
 
     public void addMembersFromGuild(Guild guild, DiscordGuild discordGuild) {
         guild.getMembers().forEach(member -> {
-            DiscordUser user = userService.findByIdDiscordUser(member.getUser().getId()).orElse(new DiscordUser(member.getUser()));
-            GuildMember guildMember = guildMemberService.findGuildMemberByMemberAndGuild(user, discordGuild).orElse(new GuildMember(user, discordGuild));
+            DiscordUser user = userService.findByIdDiscordUser(member.getUser().getId()).orElseGet(() -> new DiscordUser(member.getUser()));
+            GuildMember guildMember = guildMemberService.findGuildMemberByMemberAndGuild(user, discordGuild).orElseGet(() -> new GuildMember(user, discordGuild));
 
             if (guildMember.getLastOut() == null) {
                 guildMember.setLastOut(LocalDateTime.now());
@@ -56,7 +56,7 @@ public class BasicUtils {
                     return newRole;
                 });
 
-                UserRole userRole = userRoleService.getByRoleAndUser(discordRole, user).orElse(new UserRole(discordRole, user));
+                UserRole userRole = userRoleService.getByRoleAndUser(discordRole, user).orElseGet(() -> new UserRole(discordRole, user));
                 userRoleService.saveUserRole(userRole);
             });
         });

@@ -37,7 +37,7 @@ public class ReadyEventListener extends ListenerAdapter {
 
     private void runAfterStartup(JDA jda) {
         jda.getGuilds().forEach(guild -> {
-            DiscordGuild discordGuild = guildService.findGuildById(guild.getId()).orElse(new DiscordGuild(guild));
+            DiscordGuild discordGuild = guildService.findGuildById(guild.getId()).orElseGet(() -> new DiscordGuild(guild));
             guildService.saveGuild(discordGuild);
 
             guild.getRoles().forEach(role -> {

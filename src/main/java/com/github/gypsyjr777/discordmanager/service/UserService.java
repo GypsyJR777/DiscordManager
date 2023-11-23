@@ -23,7 +23,7 @@ public class UserService {
 
     public void updateDateUser(User user, DiscordGuild guild) {
         DiscordUser guildUser = findByIdDiscordUser(user.getId()).orElseThrow();
-        GuildMember guildMember = guildMemberService.findGuildMemberByMemberAndGuild(guildUser, guild).orElse(new GuildMember(guildUser, guild));
+        GuildMember guildMember = guildMemberService.findGuildMemberByMemberAndGuild(guildUser, guild).orElseGet(() -> new GuildMember(guildUser, guild));
         guildMember.addXp(1);
         guildMember.setLastOut(LocalDateTime.now());
         saveGuildUser(guildUser);
@@ -32,7 +32,7 @@ public class UserService {
 
     public void updateDateUser(User user, DiscordGuild guild, boolean isLeft) {
         DiscordUser guildUser = findByIdDiscordUser(user.getId()).orElseThrow();
-        GuildMember guildMember = guildMemberService.findGuildMemberByMemberAndGuild(guildUser, guild).orElse(new GuildMember(guildUser, guild));
+        GuildMember guildMember = guildMemberService.findGuildMemberByMemberAndGuild(guildUser, guild).orElseGet(() -> new GuildMember(guildUser, guild));
         if (isLeft) {
             LocalDateTime in = guildMember.getLastVoiceTime();
             LocalDateTime out = LocalDateTime.now();
@@ -47,8 +47,8 @@ public class UserService {
     }
 
     public void createNewUser(User user, boolean isLeaveTimer, DiscordGuild guild) {
-        DiscordUser discordUser = findByIdDiscordUser(user.getId()).orElse(new DiscordUser(user));
-        GuildMember guildMember = guildMemberService.findGuildMemberByMemberAndGuild(discordUser, guild).orElse(new GuildMember(discordUser, guild));
+        DiscordUser discordUser = findByIdDiscordUser(user.getId()).orElseGet(() -> new DiscordUser(user));
+        GuildMember guildMember = guildMemberService.findGuildMemberByMemberAndGuild(discordUser, guild).orElseGet(() -> new GuildMember(discordUser, guild));
 
         if (guildMember.getLastOut() == null) {
             guildMember.setLastOut(LocalDateTime.now());

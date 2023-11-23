@@ -30,7 +30,7 @@ public class GuildVoiceEvent extends ListenerAdapter {
     public void onGuildVoiceUpdate(GuildVoiceUpdateEvent event) {
         Guild guild = event.getGuild();
         DiscordGuild discordGuild = guildService.findGuildById(guild.getId())
-                .orElse(utils.createDiscordGuild(guild));
+                .orElseGet(() -> utils.createDiscordGuild(guild));
 
         Member member = event.getMember();
 
