@@ -16,3 +16,4 @@
 - ${DB_URL} - адрес БД (например, jdbc:postgresql://manager-bd:5432/discordbot)
 - ${DB_USERNAME} - имя пользователя БД
 - ${DB_PASS} - пароль БД
+- ${SEGMIND_TOKEN} - токен для Kandinsky 2.2 на Segming https://www.segmind.com/models/kandinsky2.2-txt2img/api  (опциональный параметр)
