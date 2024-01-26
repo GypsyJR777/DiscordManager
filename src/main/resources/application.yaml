@@ -1,5 +1,5 @@
 discordToken: ${DISCORD_TOKEN}
-segmindApiToken: ${SEGMIND_TOKEN}
+segmindApiToken: ${SEGMIND_TOKEN:}
 
 datasource.driver-class-name: org.postgresql.Driver
 datasource.url: ${DB_URL}

@@ -15,4 +15,6 @@ public interface DiscordRoleRepository extends JpaRepository<DiscordRole, String
     List<DiscordRole> findAllByGuild(DiscordGuild guild);
 
     List<DiscordRole> findAllByGuildAndBasic(DiscordGuild guild, boolean basic);
+
+    List<DiscordRole> findAllByGuildAndAndVip(DiscordGuild guild, boolean vip);
 }
