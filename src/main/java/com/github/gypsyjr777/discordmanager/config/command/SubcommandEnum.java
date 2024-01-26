@@ -9,9 +9,14 @@ import java.util.List;
 
 @Getter
 public enum SubcommandEnum {
-    LEAVE_TIMER(new SubcommandData("role", "Adding roles to protect against AFK")
+    LEAVE_TIMER_ADD_ROLE(new SubcommandData("role", "Adding roles to protect against AFK")
             .addOption(OptionType.ROLE, "role", "Role for protecting", true),
             "leavetimer role"),
+    LEAVE_TIMER_DEL_ROLE(new SubcommandData("remove", "Deleting role from protecting AFK")
+            .addOption(OptionType.ROLE, "role", "Protected role", true),
+            "leavetimer remove"),
+    LEAVE_TIMER_LIST(new SubcommandData("list", "Write list of protecting roles"),
+            "leavetimer list"),
     LEAVE_TIMER_ON(new SubcommandData("on", "On afk timer"), "leavetimer on"),
     LEAVE_TIMER_OFF(new SubcommandData("off", "Off afk timer"), "leavetimer off"),
 
@@ -54,9 +59,11 @@ public enum SubcommandEnum {
     public static List<SubcommandData> listOfLeaveTimers() {
         List<SubcommandData> dataList = new ArrayList<>();
 
-        dataList.add(LEAVE_TIMER.subcommandData);
+        dataList.add(LEAVE_TIMER_ADD_ROLE.subcommandData);
         dataList.add(LEAVE_TIMER_ON.subcommandData);
         dataList.add(LEAVE_TIMER_OFF.subcommandData);
+        dataList.add(LEAVE_TIMER_DEL_ROLE.subcommandData);
+        dataList.add(LEAVE_TIMER_LIST.subcommandData);
 
         return dataList;
     }

@@ -23,10 +23,10 @@ public class DiscordRole {
     @Column(nullable = true, name = "reaction")
     private String reaction;
 
-    @Column(nullable = true, columnDefinition = "boolean default false", name = "vip")
+    @Column(nullable = true, name = "vip")
     private boolean vip;
 
-    @Column(nullable = true, columnDefinition = "boolean default false", name = "basic")
+    @Column(nullable = true, name = "basic")
     private boolean basic;
 
     public DiscordRole(Role role, DiscordGuild guild) {

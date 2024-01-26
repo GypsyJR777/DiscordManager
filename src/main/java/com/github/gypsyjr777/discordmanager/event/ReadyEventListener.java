@@ -41,7 +41,9 @@ public class ReadyEventListener extends ListenerAdapter {
             guildService.saveGuild(discordGuild);
 
             guild.getRoles().forEach(role -> {
-                roleService.saveRole(new DiscordRole(role, discordGuild));
+                DiscordRole discordRole = roleService.findRoleById(role.getId())
+                        .orElseGet(() -> new DiscordRole(role, discordGuild));
+                roleService.saveRole(discordRole);
             });
 
             utils.addMembersFromGuild(guild, discordGuild);
