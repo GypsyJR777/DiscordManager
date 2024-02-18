@@ -50,6 +50,7 @@ public class GuildService {
 
         if (guild.getOwner().getUser().getId().equals(user.getId())) {
             log.info("User {} is owner of {}", user.getUsername(), guild.getName());
+            return;
         }
 
         log.info("Kick {} from {}", user.getUsername(), guild.getName());

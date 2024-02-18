@@ -29,6 +29,7 @@ public class GuildMessageEvent extends ListenerAdapter {
     @Override
     @SubscribeEvent
     public void onMessageReceived(MessageReceivedEvent event) {
+        if (!event.isFromGuild()) return;
         Guild guild = event.getGuild();
         DiscordGuild discordGuild = guildService.findGuildById(guild.getId())
                 .orElseGet(() -> utils.createDiscordGuild(guild));

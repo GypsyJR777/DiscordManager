@@ -13,6 +13,7 @@ import com.github.gypsyjr777.discordmanager.utils.BasicUtils;
 import com.github.gypsyjr777.discordmanager.utils.MessageEmbedCreator;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -100,7 +101,41 @@ public class SlashCommandInteraction extends ListenerAdapter {
                 aboutBot(event);
             } else if (event.getFullCommandName().equals(SlashCommand.HELP.getCommand())) {
                 help(event);
+            } else if (event.getFullCommandName().equals(SubcommandEnum.WELCOME_PERSONAL.getCommand())) {
+                addWelcomePersonalMessage(event);
+            } else if (event.getFullCommandName().equals(SubcommandEnum.WELCOME_GUILD.getCommand())) {
+                addWelcomeGuildMessage(event);
             }
+        }
+    }
+
+    private void addWelcomeGuildMessage(SlashCommandInteractionEvent event) {
+        if (event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+            String welcomeChannel = event.getOption("channel").getAsChannel().getId();
+            String welcomeMessage = event.getOption("message").getAsString();
+
+            Guild guild = event.getGuild();
+            DiscordGuild discordGuild = guildService.findGuildById(guild.getId()).orElseGet(() -> utils.createDiscordGuild(guild));
+            discordGuild.setGuildWelcome(welcomeMessage);
+            discordGuild.setWelcomeChannel(welcomeChannel);
+            guildService.saveGuild(discordGuild);
+            event.reply("Welcome message has added").queue();
+        } else {
+            event.reply("For this action, you need administrator rights").queue();
+        }
+    }
+
+    private void addWelcomePersonalMessage(SlashCommandInteractionEvent event) {
+        if (event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+            String welcomeMessage = event.getOption("message").getAsString();
+
+            Guild guild = event.getGuild();
+            DiscordGuild discordGuild = guildService.findGuildById(guild.getId()).orElseGet(() -> utils.createDiscordGuild(guild));
+            discordGuild.setPersonalWelcome(welcomeMessage);
+            guildService.saveGuild(discordGuild);
+            event.reply("Welcome message has added").queue();
+        } else {
+            event.reply("For this action, you need administrator rights").queue();
         }
     }
 

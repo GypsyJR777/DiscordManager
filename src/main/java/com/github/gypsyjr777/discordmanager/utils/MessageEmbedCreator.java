@@ -19,6 +19,16 @@ public class MessageEmbedCreator {
         return embedBuilder.build();
     }
 
+    public static MessageEmbed createMessageEmbedWithDate(String title, String description, OffsetDateTime timestamp) {
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+
+        embedBuilder.setTitle(title);
+        embedBuilder.setDescription(description);
+        embedBuilder.setTimestamp(timestamp);
+
+        return embedBuilder.build();
+    }
+
     public static MessageEmbed createMessageEmbed(String title, String description, String footer) {
         return createMessageEmbed(title, description, footer, null);
     }

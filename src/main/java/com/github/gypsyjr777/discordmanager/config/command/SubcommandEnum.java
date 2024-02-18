@@ -46,7 +46,14 @@ public enum SubcommandEnum {
             .addOption(OptionType.CHANNEL, "channel", "Channel for publishing", true),
             "guildlog on"),
     GUILD_LOG_OFF(new SubcommandData("off", "Turn off guild logging"),
-            "guildlog off");
+            "guildlog off"),
+    WELCOME_PERSONAL(new SubcommandData("personal", "Personal welcome message")
+            .addOption(OptionType.STRING, "message", "Welcome message. Phrase `{user}` changes to Discord username", true),
+            "welcome personal"),
+    WELCOME_GUILD(new SubcommandData("guild", "Welcome message in guild")
+            .addOption(OptionType.STRING, "message", "Welcome message. Phrase `{user}` changes to Discord username", true)
+            .addOption(OptionType.CHANNEL, "channel", "Welcome channel", true),
+            "welcome guild");
 
     private final SubcommandData subcommandData;
     private final String command;
@@ -91,6 +98,14 @@ public enum SubcommandEnum {
 
         dataList.add(GUILD_LOG_ON.subcommandData);
         dataList.add(GUILD_LOG_OFF.subcommandData);
+
+        return dataList;
+    }
+    public static List<SubcommandData> listOfWelcomeMessages() {
+        List<SubcommandData> dataList = new ArrayList<>();
+
+        dataList.add(WELCOME_GUILD.subcommandData);
+        dataList.add(WELCOME_PERSONAL.subcommandData);
 
         return dataList;
     }
