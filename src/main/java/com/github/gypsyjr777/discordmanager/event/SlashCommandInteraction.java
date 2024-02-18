@@ -14,6 +14,7 @@ import com.github.gypsyjr777.discordmanager.utils.MessageEmbedCreator;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -58,8 +59,12 @@ public class SlashCommandInteraction extends ListenerAdapter {
     @SubscribeEvent
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
         if (event.isFromGuild()) {
-            if (event.getFullCommandName().equals(SubcommandEnum.LEAVE_TIMER.getCommand())) {
-                leaveTimer(event);
+            if (event.getFullCommandName().equals(SubcommandEnum.LEAVE_TIMER_ADD_ROLE.getCommand())) {
+                leaveTimerAddRole(event);
+            } else if (event.getFullCommandName().equals(SubcommandEnum.LEAVE_TIMER_DEL_ROLE.getCommand())) {
+                leaveTimerDelRole(event);
+            } else if (event.getFullCommandName().equals(SubcommandEnum.LEAVE_TIMER_LIST.getCommand())) {
+                leaveTimerList(event);
             } else if (event.getFullCommandName().equals(SubcommandEnum.LEAVE_TIMER_ON.getCommand())) {
                 leaveTimerOn(event);
             } else if (event.getFullCommandName().equals(SubcommandEnum.LEAVE_TIMER_OFF.getCommand())) {
@@ -118,22 +123,24 @@ public class SlashCommandInteraction extends ListenerAdapter {
         }
     }
 
-    private void leaveTimer(SlashCommandInteractionEvent event) {
+    private void leaveTimerAddRole(SlashCommandInteractionEvent event) {
         if (event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
             DiscordGuild guild = guildService.findGuildById(event.getGuild().getId())
                     .orElseGet(() -> utils.createDiscordGuild(event.getGuild()));
 
             guild.setHaveLeaveTimer(true);
 
-            DiscordRole role = new DiscordRole(event.getOption("role").getAsRole(), guild);
-            role.setVip(true);
-            roleService.saveRole(role);
+            Role role = event.getOption("role").getAsRole();
+            DiscordRole discordRole = roleService.findRoleById(role.getId())
+                    .orElseGet(() -> new DiscordRole(role, guild));
+            discordRole.setVip(true);
+            roleService.saveRole(discordRole);
 
 //            guild.addRole(role);
             guildService.saveGuild(guild);
 
             event.getGuild().getMembers().forEach(member -> {
-                if (member.getRoles().stream().anyMatch(r -> r.getId().equals(role.getId()))) {
+                if (member.getRoles().stream().anyMatch(r -> r.getId().equals(discordRole.getId()))) {
                     DiscordUser discordUser = userService.findByIdDiscordUser(member.getUser().getId())
                             .orElseGet(() -> utils.createDiscordUser(member.getUser()));
 
@@ -149,6 +156,68 @@ public class SlashCommandInteraction extends ListenerAdapter {
             });
 
             event.reply("Role added").queue();
+        } else {
+            event.reply("For this action, you need administrator rights").queue();
+        }
+    }
+
+    private void leaveTimerDelRole(SlashCommandInteractionEvent event) {
+        if (event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+            DiscordGuild guild = guildService.findGuildById(event.getGuild().getId())
+                    .orElseGet(() -> utils.createDiscordGuild(event.getGuild()));
+
+            if (!guild.isHaveLeaveTimer()) {
+                event.reply("You do not have an exception for inactivity enabled").queue();
+                return;
+            }
+            Role role = event.getOption("role").getAsRole();
+            DiscordRole discordRole = roleService.findRoleById(role.getId())
+                    .orElseGet(() -> new DiscordRole(role, guild));
+            discordRole.setVip(false);
+            roleService.saveRole(discordRole);
+
+            event.getGuild().getMembers().forEach(member -> {
+                if (member.getRoles().stream().anyMatch(r -> r.getId().equals(discordRole.getId()))) {
+                    DiscordUser discordUser = userService.findByIdDiscordUser(member.getUser().getId())
+                            .orElseGet(() -> utils.createDiscordUser(member.getUser()));
+
+                    GuildMember guildMember = memberService.findGuildMemberByMemberAndGuild(
+                            discordUser,
+                            guild
+                    ).orElseGet(() -> utils.createGuildMember(discordUser, guild));
+
+                    guildMember.setLeaveTimer(false);
+
+                    memberService.saveGuildMember(guildMember);
+                }
+            });
+
+            event.reply("Role removed").queue();
+        } else {
+            event.reply("For this action, you need administrator rights").queue();
+        }
+    }
+
+    private void leaveTimerList(SlashCommandInteractionEvent event) {
+        if (event.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+            DiscordGuild guild = guildService.findGuildById(event.getGuild().getId())
+                    .orElseGet(() -> utils.createDiscordGuild(event.getGuild()));
+
+            if (!guild.isHaveLeaveTimer()) {
+                event.reply("You do not have an exception for inactivity enabled").queue();
+                return;
+            }
+
+            List<DiscordRole> vipRoles = roleService.getAllProtectionRolesByGuild(guild);
+
+            StringBuilder message = new StringBuilder("Roles:");
+            JDA jda = event.getJDA();
+            vipRoles.forEach(role -> {
+                String roleName = jda.getRoleById(role.getId()).getName();
+                message.append("\n").append(roleName);
+            });
+
+            event.reply(message.toString()).queue();
         } else {
             event.reply("For this action, you need administrator rights").queue();
         }
