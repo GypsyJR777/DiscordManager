@@ -1,3 +1,5 @@
 databaseChangeLog:
   - include:
       file: db/changelog/changes/V0001__create_tables.sql
+  - include:
+      file: db/changelog/changes/V0002_new_columns.sql

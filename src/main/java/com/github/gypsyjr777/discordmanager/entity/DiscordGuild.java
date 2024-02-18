@@ -38,6 +38,15 @@ public class DiscordGuild {
     @Column(nullable = true, name = "message_id")
     private String messageId;
 
+    @Column(nullable = true, name = "pesonal_welcome")
+    private String personalWelcome;
+
+    @Column(nullable = true, name = "guild_welcome")
+    private String guildWelcome;
+
+    @Column(nullable = true, name = "welcome_channel")
+    private String welcomeChannel;
+
     public DiscordGuild(Guild guild) {
         id = guild.getId();
         haveLeaveTimer = false;

@@ -60,7 +60,13 @@ public enum SlashCommand {
     HELP(Commands
             .slash("help", "Command list")
             .setGuildOnly(false),
-            "help");
+            "help"),
+    WELCOME_MESSAGE(Commands
+            .slash("welcome", "Welcome message")
+            .setGuildOnly(true)
+            .addSubcommands(SubcommandEnum.listOfWelcomeMessages()),
+            "welcome"
+    );
 
     private final SlashCommandData slashCommandData;
     private final String command;

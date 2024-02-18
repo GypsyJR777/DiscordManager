@@ -11,7 +11,9 @@ import com.github.gypsyjr777.discordmanager.utils.MessageEmbedCreator;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
@@ -55,6 +57,7 @@ public class GuildMembersEvent extends ListenerAdapter {
 
     @Override
     @SubscribeEvent
+    @Transactional
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {
         Guild guild = event.getGuild();
 
@@ -77,6 +80,35 @@ public class GuildMembersEvent extends ListenerAdapter {
 
             event.getGuild().addRoleToMember(event.getUser(), discordRole).queue();
         });
+
+        JDA jda = event.getJDA();
+        if (discordGuild.isHaveLogGuild()) {
+            TextChannel textChannel = jda.getTextChannelById(discordGuild.getLogGuildChannel());
+
+            MessageEmbed message =  MessageEmbedCreator.createMessage(
+                    MessageEmbedCreator.createAuthorInfo(member.getEffectiveName(), null, member.getEffectiveAvatarUrl(), null),
+                    "New user", "User " + member.getEffectiveName() + " has joined"
+            );
+            textChannel.sendMessage("").setEmbeds(message).queue();
+        }
+
+        if (discordGuild.getGuildWelcome() != null && discordGuild.getWelcomeChannel() != null) {
+            TextChannel textChannel = jda.getTextChannelById(discordGuild.getWelcomeChannel());
+
+            MessageEmbed message =  MessageEmbedCreator.createMessageEmbed(
+                    "Welcome!", discordGuild.getGuildWelcome().replace("{user}", member.getEffectiveName())
+            );
+            textChannel.sendMessage("").setEmbeds(message).queue();
+        }
+
+        if (discordGuild.getPersonalWelcome() != null) {
+            MessageEmbed message = MessageEmbedCreator.createMessageEmbed(
+                    "Welcome!", discordGuild.getPersonalWelcome().replace("{user}", member.getEffectiveName())
+            );
+
+            PrivateChannel privateChannel = jda.openPrivateChannelById(member.getUser().getId()).complete();
+            privateChannel.sendMessage("").setEmbeds(message).queue();
+        }
     }
 
     @Override
@@ -84,16 +116,28 @@ public class GuildMembersEvent extends ListenerAdapter {
     @Transactional
     public void onGuildMemberRemove(GuildMemberRemoveEvent event) {
         Guild guild = event.getGuild();
+        Member member = event.getMember();
         DiscordGuild discordGuild = guildService.findGuildById(guild.getId()).orElseGet(() -> utils.createDiscordGuild(guild));
-        DiscordUser user = userService.findByIdDiscordUser(event.getMember().getUser().getId())
+        DiscordUser user = userService.findByIdDiscordUser(member.getUser().getId())
                 .orElseThrow(() -> new NullUserException(event.getUser().getId()));
 
-        GuildMember member = memberService.findGuildMemberByMemberAndGuild(user, discordGuild)
+        GuildMember guildMember = memberService.findGuildMemberByMemberAndGuild(user, discordGuild)
                 .orElseThrow(() -> new NullMemberException(user.getUsername()));
 
         log.info("Remove member {} in guild {}", user.getUsername(), guild.getName());
 
-        memberService.deleteGuildMember(member);
+        memberService.deleteGuildMember(guildMember);
+
+        if (discordGuild.isHaveLogGuild()) {
+            JDA jda = event.getJDA();
+            TextChannel textChannel = jda.getTextChannelById(discordGuild.getLogGuildChannel());
+
+            MessageEmbed message =  MessageEmbedCreator.createMessage(
+                    MessageEmbedCreator.createAuthorInfo(member.getEffectiveName(), null, member.getEffectiveAvatarUrl(), null),
+                    "User leave", "User " + member.getEffectiveName() + " has left"
+            );
+            textChannel.sendMessage("").setEmbeds(message).queue();
+        }
     }
 
     @SubscribeEvent
