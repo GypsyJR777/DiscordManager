@@ -9,7 +9,7 @@ import com.github.gypsyjr777.discordmanager.entity.GuildMember;
 import com.github.gypsyjr777.discordmanager.exception.NullChannelException;
 import com.github.gypsyjr777.discordmanager.model.KandinskyBody;
 import com.github.gypsyjr777.discordmanager.service.*;
-import com.github.gypsyjr777.discordmanager.utils.BasicUtils;
+import com.github.gypsyjr777.discordmanager.service.BasicUtilsService;
 import com.github.gypsyjr777.discordmanager.utils.MessageEmbedCreator;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
@@ -27,7 +27,7 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.context.ApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -42,18 +42,21 @@ public class SlashCommandInteraction extends ListenerAdapter {
     private final UserService userService;
     private final RoleService roleService;
     private final KandinskyService kandinskyService;
-    private final BasicUtils utils;
+    private final BasicUtilsService utils;
 
-    private Logger log;
+    private Logger log = LogManager.getLogger(SlashCommandInteraction.class);
 
-    public SlashCommandInteraction(ApplicationContext context) {
-        this.userService = context.getBean(UserService.class);
-        this.guildService = context.getBean(GuildService.class);
-        this.memberService = context.getBean(GuildMemberService.class);
-        this.roleService = context.getBean(RoleService.class);
-        this.kandinskyService = context.getBean(KandinskyService.class);
-        this.utils = context.getBean(BasicUtils.class);
-        this.log = LogManager.getLogger(SlashCommandInteraction.class);
+    @Autowired
+    public SlashCommandInteraction(
+            GuildService guildService, GuildMemberService memberService, UserService userService,
+            RoleService roleService, KandinskyService kandinskyService, BasicUtilsService utils
+    ) {
+        this.guildService = guildService;
+        this.memberService = memberService;
+        this.userService = userService;
+        this.roleService = roleService;
+        this.kandinskyService = kandinskyService;
+        this.utils = utils;
     }
 
     @Override

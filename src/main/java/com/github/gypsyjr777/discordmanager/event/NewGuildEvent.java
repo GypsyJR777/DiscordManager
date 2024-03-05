@@ -4,7 +4,7 @@ import com.github.gypsyjr777.discordmanager.entity.*;
 import com.github.gypsyjr777.discordmanager.exception.NullGuildException;
 import com.github.gypsyjr777.discordmanager.exception.NullRoleException;
 import com.github.gypsyjr777.discordmanager.service.*;
-import com.github.gypsyjr777.discordmanager.utils.BasicUtils;
+import com.github.gypsyjr777.discordmanager.service.BasicUtilsService;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
@@ -16,11 +16,9 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.hooks.SubscribeEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.Set;
 
 @Service
@@ -30,17 +28,19 @@ public class NewGuildEvent extends ListenerAdapter {
     private final GuildMemberService memberService;
     private final RoleService roleService;
     private final UserRoleService userRoleService;
-    private final BasicUtils utils;
-    private final Logger log;
+    private final BasicUtilsService utils;
+    private final Logger log = LogManager.getLogger(NewGuildEvent.class);
 
-    public NewGuildEvent(ApplicationContext context) {
-        this.userService = context.getBean(UserService.class);
-        this.guildService = context.getBean(GuildService.class);
-        this.memberService = context.getBean(GuildMemberService.class);
-        this.roleService = context.getBean(RoleService.class);
-        this.userRoleService = context.getBean(UserRoleService.class);
-        this.utils = context.getBean(BasicUtils.class);
-        this.log = LogManager.getLogger(NewGuildEvent.class);
+    public NewGuildEvent(
+            UserService userService, GuildService guildService, GuildMemberService memberService,
+            RoleService roleService, UserRoleService userRoleService, BasicUtilsService utils
+    ) {
+        this.userService = userService;
+        this.guildService = guildService;
+        this.memberService = memberService;
+        this.roleService = roleService;
+        this.userRoleService = userRoleService;
+        this.utils = utils;
     }
 
     @Override

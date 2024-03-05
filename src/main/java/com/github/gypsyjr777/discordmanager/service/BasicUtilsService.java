@@ -1,4 +1,4 @@
-package com.github.gypsyjr777.discordmanager.utils;
+package com.github.gypsyjr777.discordmanager.service;
 
 import com.github.gypsyjr777.discordmanager.entity.*;
 import com.github.gypsyjr777.discordmanager.service.*;
@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
-public class BasicUtils {
+public class BasicUtilsService {
 
     @Autowired
     private UserService userService;

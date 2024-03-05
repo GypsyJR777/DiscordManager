@@ -6,7 +6,7 @@ import com.github.gypsyjr777.discordmanager.exception.NullMemberException;
 import com.github.gypsyjr777.discordmanager.exception.NullRoleException;
 import com.github.gypsyjr777.discordmanager.exception.NullUserException;
 import com.github.gypsyjr777.discordmanager.service.*;
-import com.github.gypsyjr777.discordmanager.utils.BasicUtils;
+import com.github.gypsyjr777.discordmanager.service.BasicUtilsService;
 import com.github.gypsyjr777.discordmanager.utils.MessageEmbedCreator;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
@@ -26,7 +26,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.hooks.SubscribeEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.context.ApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,17 +42,16 @@ public class GuildMembersEvent extends ListenerAdapter {
     private final GuildService guildService;
     private final GuildMemberService memberService;
     private final RoleService roleService;
-    private final BasicUtils utils;
-    private final Logger log;
+    private final BasicUtilsService utils;
+    private final Logger log = LogManager.getLogger(GuildMembersEvent.class);
 
-    public GuildMembersEvent(ApplicationContext context) {
-        this.userService = context.getBean(UserService.class);
-        this.guildService = context.getBean(GuildService.class);
-        this.memberService = context.getBean(GuildMemberService.class);
-        this.roleService = context.getBean(RoleService.class);
-        this.utils = context.getBean(BasicUtils.class);
-
-        this.log = LogManager.getLogger(GuildMembersEvent.class);
+    @Autowired
+    public GuildMembersEvent(UserService userService, GuildService guildService, GuildMemberService memberService, RoleService roleService, BasicUtilsService utils) {
+        this.userService = userService;
+        this.guildService = guildService;
+        this.memberService = memberService;
+        this.roleService = roleService;
+        this.utils = utils;
     }
 
     @Override
@@ -69,7 +68,7 @@ public class GuildMembersEvent extends ListenerAdapter {
 
         userService.createNewUser(
                 member.getUser(),
-                BasicUtils.checkLeaveTimerMember(member, roleService.getAllRolesByGuild(discordGuild), discordGuild),
+                BasicUtilsService.checkLeaveTimerMember(member, roleService.getAllRolesByGuild(discordGuild), discordGuild),
                 discordGuild
         );
 

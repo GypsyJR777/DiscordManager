@@ -2,7 +2,7 @@ package com.github.gypsyjr777.discordmanager.event;
 
 import com.github.gypsyjr777.discordmanager.entity.DiscordGuild;
 import com.github.gypsyjr777.discordmanager.exception.NullChannelException;
-import com.github.gypsyjr777.discordmanager.utils.BasicUtils;
+import com.github.gypsyjr777.discordmanager.service.BasicUtilsService;
 import com.github.gypsyjr777.discordmanager.utils.GuildEventPreparationMessage;
 import com.github.gypsyjr777.discordmanager.service.*;
 import net.dv8tion.jda.api.JDA;
@@ -12,20 +12,20 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.hooks.SubscribeEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.context.ApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class GuildNewsEvent extends ListenerAdapter {
 
     private final GuildService guildService;
-    private final BasicUtils utils;
-    private final Logger log;
+    private final BasicUtilsService utils;
+    private final Logger log = LogManager.getLogger(GuildNewsEvent.class);
 
-    public GuildNewsEvent(ApplicationContext context) {
-        this.guildService = context.getBean(GuildService.class);
-        this.utils = context.getBean(BasicUtils.class);
-        this.log = LogManager.getLogger(GuildNewsEvent.class);
+    @Autowired
+    public GuildNewsEvent(GuildService guildService, BasicUtilsService utils) {
+        this.guildService = guildService;
+        this.utils = utils;
     }
 
     @SubscribeEvent

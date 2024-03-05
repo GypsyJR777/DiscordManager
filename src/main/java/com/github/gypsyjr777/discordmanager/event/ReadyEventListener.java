@@ -3,29 +3,29 @@ package com.github.gypsyjr777.discordmanager.event;
 import com.github.gypsyjr777.discordmanager.config.command.SlashCommand;
 import com.github.gypsyjr777.discordmanager.entity.*;
 import com.github.gypsyjr777.discordmanager.service.*;
-import com.github.gypsyjr777.discordmanager.utils.BasicUtils;
+import com.github.gypsyjr777.discordmanager.service.BasicUtilsService;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.hooks.SubscribeEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.context.ApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ReadyEventListener extends ListenerAdapter {
     private final GuildService guildService;
     private final RoleService roleService;
-    private final BasicUtils utils;
+    private final BasicUtilsService utils;
 
-    private Logger log;
+    private static final Logger log = LogManager.getLogger(ReadyEventListener.class);
 
-    public ReadyEventListener(ApplicationContext context) {
-        this.guildService = context.getBean(GuildService.class);
-        this.roleService = context.getBean(RoleService.class);
-        this.utils = context.getBean(BasicUtils.class);
-        this.log = LogManager.getLogger(ReadyEventListener.class);
+    @Autowired
+    public ReadyEventListener(GuildService guildService, RoleService roleService, BasicUtilsService utils) {
+        this.guildService = guildService;
+        this.roleService = roleService;
+        this.utils = utils;
     }
 
     @Override
