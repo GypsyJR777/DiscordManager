@@ -1,10 +1,21 @@
 discordToken: ${DISCORD_TOKEN}
 segmindApiToken: ${SEGMIND_TOKEN:}
 
-datasource.driver-class-name: org.postgresql.Driver
-datasource.url: ${DB_URL}
-datasource.username: ${DB_USERNAME}
-datasource.password: ${DB_PASS}
-datasource.dialect: org.hibernate.dialect.PostgreSQLDialect
-
-liquibase.change-log: db/changelog/db.changelog-master.yaml
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASS}
+  jpa:
+    hibernate:
+      ddl-auto: none
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  batch:
+    job:
+      enabled: false
+    jdbc:
+      initialize-schema: always
+  liquibase:
+    change-log: db/changelog/db.changelog-master.yaml
+    enabled: true
